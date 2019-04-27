@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <link rel="import" href="view/common/header.html">
+</head>
+<body>
+<h2>登录</h2>
+<div style="margin:20px 0;"></div>
+<div class="easyui-panel" title="登录" style="width:400px">
+    <div style="padding:10px 60px 20px 60px">
+        <form id="ff" method="get">
+            <table cellpadding="5">
+                <tr>
+                    <td>Phone:</td>
+                    <td><input class="easyui-textbox" type="text" name="phone" id="phone"
+                               data-options="required:true,validType:'phone'"></input></td>
+                </tr>
+                <tr>
+                    <td>Password:</td>
+                    <td><input class="easyui-passwordbox" type="password" name="password" id="password"
+                               data-options="required:true"></input></td>
+                </tr>
+            </table>
+        </form>
+        <div style="text-align:center;padding:10px">
+            <a href="javascript:void(0)" class="easyui-linkbutton" onclick="submitForm()">Submit</a>
+            <a href="javascript:void(0)" class="easyui-linkbutton" onclick="clearForm()">Clear</a>
+        </div>
+    </div>
+</div>
+</body>
+<script type="text/javascript" src="/store/js/login.js"></script>
+</html>
