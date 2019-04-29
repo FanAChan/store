@@ -9,6 +9,19 @@ import java.util.Map;
  */
 public class CommonResponse {
 
+    /**
+     * 返回状态码，默认0为成功
+     */
+    private int status = 0;
+
+    public int getStatus() {
+        return status;
+    }
+
+    public void setStatus(int status) {
+        this.status = status;
+    }
+
     private boolean success;
 
     private String message;

@@ -2,11 +2,15 @@ package com.achan.service.impl;
 
 import com.achan.dao.UnitDao;
 import com.achan.entity.UnitVo;
+import com.achan.entity.UserVo;
 import com.achan.entity.base.UnitBase;
 import com.achan.entity.base.UnitBaseExample;
+import com.achan.entity.base.UserBase;
 import com.achan.service.UnitService;
 import com.achan.util.EntityConverter;
+import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
+import com.github.pagehelper.PageInfo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
@@ -55,11 +59,14 @@ public class UnitServiceImpl implements UnitService {
     }
 
     @Override
-    public List<UnitVo> pageUnitVo(UnitVo unitVo, int page, int num) {
+    public PageInfo pageUnitVo(UnitVo unitVo, int pageNum, int pageSize) {
 
-        PageHelper.startPage(page, num);
-        List<UnitVo> unitVos = unitDao.selectByVo(unitVo);
-        return unitVos;
+        PageHelper.startPage(pageNum, pageSize);
+        List<UnitBase> unitBases = unitDao.selectByExample(new UnitBaseExample());
+        List<UnitVo> unitVos = EntityConverter.convert(unitBases, UnitVo.class);
+        PageInfo page = new PageInfo(unitBases);
+        page.setList(unitVos);
+        return page;
     }
 
     @Override

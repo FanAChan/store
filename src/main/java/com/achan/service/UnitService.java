@@ -1,6 +1,7 @@
 package com.achan.service;
 
 import com.achan.entity.UnitVo;
+import com.github.pagehelper.PageInfo;
 
 import java.util.List;
 
@@ -51,7 +52,7 @@ public interface UnitService {
      * @param num
      * @return
      */
-    List<UnitVo> pageUnitVo(UnitVo unitVo, int page, int num);
+    PageInfo pageUnitVo(UnitVo unitVo, int pageNum, int pageSize);
 
     /**
      * 根据Id获取详细信息

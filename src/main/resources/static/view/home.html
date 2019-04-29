@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8"/>
+    <title>企业进销存系统</title>
+    <link rel="stylesheet" href="layui/css/layui.css">
+    <script src="layui/layui.all.js"></script>
+    <script src="js/layTabPlus.js"></script>
+</head>
+
+<body class="layui-layout-body">
+<div class="layui-layout layui-layout-admin">
+
+    <!-- 头部-->
+    <div class="layui-header">
+        <div class="layui-logo">企业进销存系统</div>
+        <ul class="layui-nav layui-layout-right">
+            <li class="layui-nav-item">
+                <a href="javascript:;">
+                    <img src="image/index.jpg" class="layui-nav-img">
+                    贤心
+                </a>
+                <dl class="layui-nav-child">
+                    <dd><a href="">基本资料</a></dd>
+                </dl>
+            </li>
+            <li class="layui-nav-item"><a href="">退出</a></li>
+        </ul>
+    </div>
+
+    <!-- 左侧导航区域（可配合layui已有的垂直导航） -->
+    <div class="layui-side layui-bg-black">
+        <div class="layui-side-scroll">
+            <ul class="layui-nav layui-nav-tree">
+
+                <li class="layui-nav-item layui-nav-itemed">
+                    <a class="layTabPlus" tab_url="view/unit.html">单位设置</a>
+                </li>
+                <li class="layui-nav-item layui-nav-itemed">
+                    <a class="layTabPlus" tab_url="view/goods_type.html">类型设置</a>
+                </li>
+                <li class="layui-nav-item layui-nav-itemed">
+                    <a class="layTabPlus" tab_url="view/goods.html">商品列表</a>
+                </li>
+                <li class="layui-nav-item layui-nav-itemed">
+                    <a class="layTabPlus" tab_url="view/role.html">角色设置</a>
+                </li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- 主题   -->
+    <div class="layui-body">
+        <!-- 内容主体区域 -->
+        <div class="layui-tab" lay-filter="demoTab" lay-allowClose="true">
+            <ul class="layui-tab-title">
+                <li class="layui-this noclose" lay-id='base_info'>基本信息</li>
+            </ul>
+            <div class="layui-tab-content" style="padding:0px;">
+                <div class="layui-tab-item layui-show">
+                    欢迎使用进销存系统
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!--  底部    -->
+    <div class="layui-footer">
+        © 2019 <a>store</a> - by AChan
+    </div>
+
+</div>
+
+<script>
+    var $ = layui.jquery;
+    var layer = layui.layer;
+    var element = layui.element;
+    var util = layui.util;
+    var table = layui.table;
+
+    layTabPlus.init({
+        lay_filter: 'demoTab'
+    });
+</script>
+</body>
+
+</html>

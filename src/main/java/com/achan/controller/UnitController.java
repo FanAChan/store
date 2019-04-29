@@ -5,6 +5,7 @@ import com.achan.common.StoreException;
 import com.achan.entity.UnitVo;
 import com.achan.service.UnitService;
 import com.achan.util.UUIDUtil;
+import com.github.pagehelper.PageInfo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.ObjectUtils;
 import org.springframework.web.bind.annotation.*;
@@ -54,10 +55,10 @@ public class UnitController {
 
     @GetMapping("/page")
     public CommonResponse page(@RequestParam(required = false) UnitVo unitVo,
-                               int page, int num) {
-        List<UnitVo> unitVos = unitService.pageUnitVo(unitVo, page, num);
+                               int pageNum, int pageSize) {
+        PageInfo pageInfo = unitService.pageUnitVo(unitVo, pageNum, pageSize);
         HashMap<String, Object> resultMap = new HashMap<>();
-        resultMap.put("page", unitVos);
+        resultMap.put("page", pageInfo);
         CommonResponse success = CommonResponse.success(resultMap);
         return success;
     }

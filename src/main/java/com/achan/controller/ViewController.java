@@ -22,9 +22,9 @@ public class ViewController {
         return "register";
     }
 
-    @RequestMapping("/left")
+    @RequestMapping("/home")
     public String left() {
-        return "layui";
+        return "home";
     }
 
     @RequestMapping("/index")
