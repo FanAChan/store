@@ -5,10 +5,7 @@ import com.achan.entity.RoleVo;
 import com.achan.service.RoleService;
 import com.achan.util.UUIDUtil;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
 import java.util.List;
@@ -54,8 +51,8 @@ public class RoleController {
     }
 
     @GetMapping("/page")
-    public CommonResponse page(RoleVo roleVo, int page, int num) {
-        List<RoleVo> roleVoList = roleService.pageRole(roleVo, page, num);
+    public CommonResponse page(@RequestParam(required = false) RoleVo roleVo, int pageNum, int pageSize) {
+        List<RoleVo> roleVoList = roleService.pageRole(roleVo, pageNum, pageSize);
         HashMap<String, Object> data = new HashMap<>();
         data.put("page", roleVoList);
         return CommonResponse.success(data);

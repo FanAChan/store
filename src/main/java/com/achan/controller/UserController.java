@@ -96,8 +96,8 @@ public class UserController {
     }
 
     @GetMapping("/page")
-    public CommonResponse page(@RequestParam(required = false) UserVo userVo, int page, int num) {
-        List<UserVo> userVos = userService.selectUserVoPage(userVo, page, num);
+    public CommonResponse page(@RequestParam(required = false) UserVo userVo, int pageNum, int pageSize) {
+        List<UserVo> userVos = userService.selectUserVoPage(userVo, pageNum, pageSize);
         HashMap<String, Object> data = new HashMap<>();
         data.put("page", userVos);
         return CommonResponse.success(data);
@@ -111,7 +111,6 @@ public class UserController {
         }
         return CommonResponse.operationSuccess();
     }
-
 
 
 }

@@ -2,13 +2,12 @@ package com.achan.service.impl;
 
 import com.achan.dao.GoodsTypeDao;
 import com.achan.entity.GoodsTypeVo;
-import com.achan.entity.GoodsVo;
 import com.achan.entity.base.GoodsTypeBase;
 import com.achan.entity.base.GoodsTypeBaseExample;
 import com.achan.service.GoodsTypeService;
 import com.achan.util.EntityConverter;
 import com.github.pagehelper.PageHelper;
-import org.springframework.beans.BeanUtils;
+import com.github.pagehelper.PageInfo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
@@ -16,6 +15,9 @@ import org.springframework.util.ObjectUtils;
 import org.springframework.util.StringUtils;
 
 import java.util.List;
+import java.util.Map;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 /**
  * @author AChan
@@ -61,10 +63,19 @@ public class GoodsTypeServiceImpl implements GoodsTypeService {
     }
 
     @Override
-    public List<GoodsTypeVo> getGoodsTypePage(int page, int num) {
+    public PageInfo getGoodsTypePage(GoodsTypeVo goodsTypeVo, int page, int num) {
         PageHelper.startPage(page, num);
+        GoodsTypeBaseExample goodsTypeBaseExample = new GoodsTypeBaseExample();
+        goodsTypeBaseExample.createCriteria()
+                .andDeletedEqualTo(false);
+        if (!ObjectUtils.isEmpty(goodsTypeVo)) {
 
-        return null;
+        }
+        List<GoodsTypeBase> goodsTypeBases = goodsTypeDao.selectByExample(goodsTypeBaseExample);
+        List<GoodsTypeVo> goodsTypeVoList = EntityConverter.convert(goodsTypeBases, GoodsTypeVo.class);
+        PageInfo goodsTypeBasePageInfo = new PageInfo<>(goodsTypeBases);
+        goodsTypeBasePageInfo.setList(goodsTypeVoList);
+        return goodsTypeBasePageInfo;
     }
 
     @Override
@@ -74,6 +85,25 @@ public class GoodsTypeServiceImpl implements GoodsTypeService {
         return goodsTypeVo;
     }
 
+    @Override
+    public List<GoodsTypeVo> getAll() {
+        GoodsTypeBaseExample goodsTypeBaseExample = new GoodsTypeBaseExample();
+        goodsTypeBaseExample.createCriteria()
+                .andDeletedEqualTo(false);
+        List<GoodsTypeBase> goodsTypeBases = goodsTypeDao.selectByExample(goodsTypeBaseExample);
+        List<GoodsTypeVo> goodsTypeVoList = EntityConverter.convert(goodsTypeBases, GoodsTypeVo.class);
+        Map<String, GoodsTypeVo> typeVoMap = goodsTypeVoList.stream().collect(Collectors.toMap(GoodsTypeBase::getId, Function.identity()));
+        goodsTypeVoList.stream()
+                .forEach(goodsTypeVo -> {
+                    if (!StringUtils.isEmpty(goodsTypeVo.getParentId())) {
+                        typeVoMap.get(goodsTypeVo.getParentId()).addChildren(goodsTypeVo);
+                    }
+                });
+        List<GoodsTypeVo> result = goodsTypeVoList.stream().filter(goodsTypeVo -> {
+            return StringUtils.isEmpty(goodsTypeVo.getParentId());
+        }).collect(Collectors.toList());
+        return result;
+    }
 
     /**
      * 判断类型是否存在，true存在，false不存在

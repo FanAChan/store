@@ -33,8 +33,8 @@ public class MenuController {
     }
 
     @GetMapping("/page")
-    public CommonResponse page(@RequestParam(required = false) MenuVo menuVo, int page, int num) {
-        List<MenuVo> menuVoPage = menuService.getPage(menuVo, page, num);
+    public CommonResponse page(@RequestParam(required = false) MenuVo menuVo, int pageNum, int pageSize) {
+        List<MenuVo> menuVoPage = menuService.getPage(menuVo, pageNum, pageSize);
         HashMap<String, Object> data = new HashMap<>();
         data.put("page", menuVoPage);
         return CommonResponse.success(data);

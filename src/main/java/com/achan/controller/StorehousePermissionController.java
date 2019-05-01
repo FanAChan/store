@@ -46,7 +46,7 @@ public class StorehousePermissionController {
         return CommonResponse.operationSuccess();
     }
 
-    public CommonResponse page(String id, int page, int num) {
+    public CommonResponse page(String id, int pageNum, int pageSize) {
         return null;
     }
 

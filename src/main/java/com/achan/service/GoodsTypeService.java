@@ -1,7 +1,9 @@
 package com.achan.service;
 
 import com.achan.entity.GoodsTypeVo;
+import com.github.pagehelper.PageInfo;
 
+import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -18,7 +20,11 @@ public interface GoodsTypeService {
 
     int update(GoodsTypeVo goodsTypeVo);
 
-    List<GoodsTypeVo> getGoodsTypePage(int page, int num);
+    PageInfo getGoodsTypePage(GoodsTypeVo goodsTypeVo, int page, int num);
 
     GoodsTypeVo getById(String id);
+
+    List<GoodsTypeVo> getAll();
+
+
 }

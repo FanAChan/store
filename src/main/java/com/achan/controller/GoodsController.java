@@ -66,9 +66,9 @@ public class GoodsController {
 
 
     @GetMapping("/page")
-    public CommonResponse page(@RequestParam(required = false) GoodsVo goodsVo, int page, int num) throws StoreException {
+    public CommonResponse page(@RequestParam(required = false) GoodsVo goodsVo, int pageNum, int pageSize) throws StoreException {
 
-        List<GoodsVo> goodsVos = goodsService.pageGoodsBase(goodsVo, page, num);
+        List<GoodsVo> goodsVos = goodsService.pageGoodsBase(goodsVo, pageNum, pageSize);
         HashMap<String, Object> resultMap = new HashMap<>();
         resultMap.put("page", goodsVos);
         CommonResponse success = CommonResponse.success(resultMap);

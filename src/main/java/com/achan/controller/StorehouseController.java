@@ -5,6 +5,7 @@ import com.achan.common.StoreException;
 import com.achan.entity.StoreHouseVo;
 import com.achan.service.StorehouseService;
 import com.achan.util.UUIDUtil;
+import com.github.pagehelper.PageInfo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.ObjectUtils;
 import org.springframework.web.bind.annotation.*;
@@ -34,6 +35,16 @@ public class StorehouseController {
         return CommonResponse.operationSuccess();
     }
 
+    @PostMapping("/update")
+    private CommonResponse update(StoreHouseVo storeHouseVo) {
+        int update = storehouseService.update(storeHouseVo);
+        if (update == 0) {
+            return CommonResponse.operationFailed();
+        }
+        return CommonResponse.operationSuccess();
+    }
+
+
     @PostMapping("/delete")
     private CommonResponse delete(String id) {
         int delete = storehouseService.delete(id);
@@ -44,8 +55,8 @@ public class StorehouseController {
     }
 
     @GetMapping("/page")
-    private CommonResponse page(@RequestParam(required = false) StoreHouseVo storeHouseVo, int page, int num) {
-        List<StoreHouseVo> storehousePage = storehouseService.getStorehousePage(storeHouseVo, page, num);
+    private CommonResponse page(@RequestParam(required = false) StoreHouseVo storeHouseVo, int pageNum, int pageSize) {
+        PageInfo storehousePage = storehouseService.getStorehousePage(storeHouseVo, pageNum, pageSize);
         HashMap<String, Object> data = new HashMap<>();
         data.put("page", storehousePage);
         return CommonResponse.success(data);

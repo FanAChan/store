@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8"/>
+    <title>企业进销存系统</title>
+    <link rel="stylesheet" href="../../layui/css/layui.css">
+    <script src="../../layui/layui.all.js"></script>
+    <script src="../../module/common.js"></script>
+</head>
+<body>
+<div class="layui-fluid" style="padding: 10px">
+
+    <form class="layui-form" id="add_storehouse">
+        <div class="layui-form-item">
+            <label class="layui-form-label" style="width: 50px">ID</label>
+            <div class="layui-input-block">
+                <input id="id" type="text" name="id" required="" lay-verify="required" autocomplete="off"
+                       class="layui-input layui-disabled" disabled="disabled"/>
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">名称</label>
+            <div class="layui-input-block">
+                <input id="name" type="text" name="name" required="" lay-verify="required" placeholder="请输入类型名称"
+                       autocomplete="off" class="layui-input"/>
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label for="" class="layui-form-label">父类型</label>
+            <input class="layui-hide" id="parentId">
+            <div class="layui-input-block">
+                <input type="text" id="tree" lay-filter="tree" class="layui-input">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">叶子节点</label>
+            <div class="layui-input-inline">
+                <input id="leaf" type="checkbox" name="leaf" lay-skin="switch" lay-text="是|否" value="false"
+                       lay-filter="leaf">
+            </div>
+            <div class="layui-form-mid layui-word-aux">商品只允许设置为叶子节点类型</div>
+        </div>
+        <div class="layui-form-item layui-form-text">
+            <label class="layui-form-label">描述</label>
+            <div class="layui-input-block">
+                <textarea id="description" name="description" placeholder="请输入类型描述" class="layui-textarea"></textarea>
+            </div>
+        </div>
+        <hr/>
+    </form>
+
+</div>
+</body>
+<script type="text/javascript">
+    layui.use(['form', 'treeSelect', 'jquery'], function () {
+        var form = layui.form;
+        var treeSelect = layui.treeSelect;
+        var $ = layui.jquery;
+        var parentId = parent.data.parentId;
+        var leaf = parent.data.leaf;
+        $('#parentId').val(parentId);
+        var id = parent.data.id;
+        if (leaf) {
+            $('#leaf').val(leaf);
+            $("#leaf").attr('checked','checked');
+        }
+        form.render();
+        treeSelect.render({
+            // 选择器
+            elem: '#tree',
+            // 数据
+            data: '/store/goodsType/all',
+            // 异步加载方式：get/post，默认get
+            type: 'get',
+            // 占位符
+            placeholder: '选择父类型',
+            // 是否开启搜索功能：true/false，默认false
+            search: true,
+            // 点击回调
+            click: function (obj) {
+                var local_data = obj.current;
+                if (local_data.leaf || id == local_data.id) {
+                    treeSelect.revokeNode('tree', function (d) {
+                    });
+                    layer.msg("叶子节点类型不允许设置为父类型且父类型不能为自身");
+                } else {
+                    var new_parentId = local_data.id;
+                    $('#parentId').val(new_parentId);
+                }
+            },
+            // 加载完成后的回调函数
+            success: function (d) {
+//                选中节点，根据id筛选
+
+                if (parentId && parentId.length != 0) {
+                    treeSelect.checkNode('tree', parentId);
+                }
+//                treeSelect.checkNode('tree', 3);
+
+//                获取zTree对象，可以调用zTree方法
+//                var treeObj = treeSelect.zTree('tree');
+//                console.log(treeObj);
+
+//                刷新树结构
+//                treeSelect.refresh();
+            }
+        });
+
+        //监听指定开关
+        form.on('switch(leaf)', function (data) {
+            $('#leaf').val((this.checked ? 'true' : 'false'))
+        });
+    });
+
+</script>
+</html>

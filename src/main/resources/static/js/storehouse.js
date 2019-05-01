@@ -3,7 +3,6 @@ layui.use(['element', 'table', 'jquery'], function () {
     var table = layui.table;
     var $ = layui.jquery;
 
-
     //监听表格复选框选择
     table.on('checkbox(demo)', function (obj) {
         var data = obj.data;
@@ -23,7 +22,7 @@ layui.use(['element', 'table', 'jquery'], function () {
                 area: ['400px', '300px'],
                 shadeClose: true,
                 skin: "layui-layer-molv",
-                content: "../unit/edit.html",
+                content: "../storehouse/edit.html",
                 btn: ["确定"],
                 btnAlign: "c",
                 yes: function (index, layero) {
@@ -33,6 +32,7 @@ layui.use(['element', 'table', 'jquery'], function () {
                     var body = layer.getChildFrame('body', index);
                     body.find('#id').val(data.id);
                     body.find('#name').val(data.name);
+                    body.find('#address').val(data.address);
                     body.find('#description').val(data.description);
                     body.find('input').attr('disabled', 'disabled');
                     body.find('input').addClass('layui-disabled');
@@ -47,7 +47,7 @@ layui.use(['element', 'table', 'jquery'], function () {
             //删除事件
             layer.confirm('真的删除行么', function (index) {
                 $.ajax({
-                    url: "/store/unit/delete",
+                    url: "/store/storehouse/delete",
                     type: "post",
                     data: {
                         "id": data.id
@@ -81,7 +81,7 @@ layui.use(['element', 'table', 'jquery'], function () {
                 area: ['400px', '300px'],
                 shadeClose: true,
                 skin: "layui-layer-molv",
-                content: "../unit/edit.html",
+                content: "../storehouse/edit.html",
                 btn: ["确定", "取消"],
                 btnAlign: "c",
                 yes: function (index, layero) {
@@ -94,20 +94,24 @@ layui.use(['element', 'table', 'jquery'], function () {
                     var body = layer.getChildFrame('body', index);
                     body.find('#id').val(data.id);
                     body.find('#name').val(data.name);
+                    body.find('#address').val(data.address);
                     body.find('#description').val(data.description);
 
                 },
                 yes: function (index, layero) {
                     var body = layer.getChildFrame('body', index);
                     var new_name = body.find('#name').val();
+                    var new_address = body.find('#address').val();
                     var new_description = body.find('#description').val();
-                    if (new_name != data.name || new_description != data.description) {
+                    if (new_name != data.name || new_description != data.description
+                        || new_address != data.address) {
                         $.ajax({
-                            url: "/store/unit/update",
+                            url: "/store/storehouse/update",
                             type: "post",
                             data: {
                                 id: data.id,
                                 name: new_name,
+                                address: new_address,
                                 description: new_description
                             },
                             success: function (data) {
@@ -141,13 +145,14 @@ layui.use(['element', 'table', 'jquery'], function () {
     //渲染数据表格
     table.render({
         elem: '#demo'
-        , url: '/store/unit/page'
+        , url: '/store/storehouse/page'
         , cols: [[ //标题栏
             {type: 'checkbox', fixed: 'left'}
             , {type: 'numbers', title: '序号', align: 'center', width: 80, fixed: 'left'}
             , {field: 'id', title: 'ID', width: 250, sort: true, fixed: 'left'}
             , {field: 'name', title: '名称', width: 250}
             , {field: 'description', title: '描述', minWidth: 250}
+            , {field: 'address', title: '地址', minWidth: 250}
             , {fixed: 'right', title: '操作', toolbar: '#barDemo', width: 150}
         ]]
         , toolbar: '#toolDemo'
@@ -170,57 +175,58 @@ layui.use(['element', 'table', 'jquery'], function () {
         page: true
 
     });
-});
 
-//新增事件
-function add_button() {
-    layer.open({
-        type: 2,
-        title: "新增",
-        closeBtn: 1,
-        area: ['400px', '300px'],
-        shadeClose: true,
-        skin: "layui-layer-molv",
-        content: "../unit/add.html",
-        btn: ["确定", "取消"],
-        btnAlign: "c",
-        yes: function (index, layero) {
-            var body = layer.getChildFrame('body', index);
-            var name = body.find('#name').val();
-            var description = body.find('#description').val();
-            $.ajax({
-                url: "/store/unit/add",
-                type: "post",
-                data: {
-                    name: name,
-                    description: description
-                },
-                success: function (data) {
-                    if (data.success) {
-                        layer.close(index);
-                        layer.msg(data.message);
-                        table.reload('demo', {
-                            where: {
-                                data: $('#demo').val()
-                            }
-                        })
-                    } else {
-                        layer.msg(data.message);
+    $(document).on('click', '#add', function () {
+        layer.open({
+            type: 2,
+            title: "新增",
+            closeBtn: 1,
+            area: ['400px', '300px'],
+            shadeClose: true,
+            skin: "layui-layer-molv",
+            content: "../storehouse/add.html",
+            btn: ["确定", "取消"],
+            btnAlign: "c",
+            yes: function (index, layero) {
+                var body = layer.getChildFrame('body', index);
+                var name = body.find('#name').val();
+                var description = body.find('#description').val();
+                var address = body.find('#address').val();
+                $.ajax({
+                    url: "/store/storehouse/add",
+                    type: "post",
+                    data: {
+                        name: name,
+                        description: description,
+                        address: address
+                    },
+                    success: function (data) {
+                        if (data.success) {
+                            layer.close(index);
+                            layer.msg(data.message);
+                            table.reload('demo', {
+                                where: {
+                                    data: $('#demo').val()
+                                }
+                            })
+                        } else {
+                            layer.msg(data.message);
+                        }
+                    },
+                    failed: function () {
+                        layer.msg("错误");
                     }
-                },
-                failed: function () {
-                    layer.msg("错误");
-                }
-            })
+                })
 
 
-            layer.close(index);
-        },
-        btn2: function (index, layero) {
-            layer.close(index);
-        },
-        cancel: function (index, layero) {
-            layer.close(index)
-        }
+                layer.close(index);
+            },
+            btn2: function (index, layero) {
+                layer.close(index);
+            },
+            cancel: function (index, layero) {
+                layer.close(index)
+            }
+        });
     });
-}
+});

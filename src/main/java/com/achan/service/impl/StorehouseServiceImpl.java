@@ -7,6 +7,7 @@ import com.achan.entity.base.StorehouseBaseExample;
 import com.achan.service.StorehouseService;
 import com.achan.util.EntityConverter;
 import com.github.pagehelper.PageHelper;
+import com.github.pagehelper.PageInfo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
@@ -59,15 +60,24 @@ public class StorehouseServiceImpl implements StorehouseService {
     }
 
     @Override
-    public List<StoreHouseVo> getStorehousePage(StoreHouseVo storeHouseVo, int page, int num) {
+    public PageInfo getStorehousePage(StoreHouseVo storeHouseVo, int page, int num) {
         PageHelper.startPage(page, num);
-        return storehouseDao.selectByVo(storeHouseVo);
+        StorehouseBaseExample example = new StorehouseBaseExample();
+        example.createCriteria()
+                .andDeletedEqualTo(false);
+        if (!ObjectUtils.isEmpty(storeHouseVo)) {
+            example.createCriteria().andNameLike(storeHouseVo.getName());
+        }
+        List<StorehouseBase> storehouseBaseList = storehouseDao.selectByExample(example);
+        PageInfo pageInfo = new PageInfo<>(storehouseBaseList);
+        pageInfo.setList(EntityConverter.convert(storehouseBaseList,StoreHouseVo.class));
+        return pageInfo;
     }
 
     @Override
     public StoreHouseVo getById(String id) {
         StorehouseBase storehouseBase = storehouseDao.selectByPrimaryKey(id);
-        StoreHouseVo storeHouseVo = EntityConverter.convert(storehouseBase,StoreHouseVo.class);
+        StoreHouseVo storeHouseVo = EntityConverter.convert(storehouseBase, StoreHouseVo.class);
         return storeHouseVo;
     }
 

@@ -49,8 +49,8 @@ public class BillController {
     }
 
     @GetMapping("/page")
-    public CommonResponse page(@RequestParam(required = false) BillVo billVo, int page, int num) {
-        List<BillVo> billVoPage = billService.getBillVoPage(billVo, page, num);
+    public CommonResponse page(@RequestParam(required = false) BillVo billVo, int pageNum, int pageSize) {
+        List<BillVo> billVoPage = billService.getBillVoPage(billVo, pageNum, pageSize);
         HashMap<String, Object> data = new HashMap<>();
         data.put("page", billVoPage);
         return CommonResponse.success(data);

@@ -62,7 +62,10 @@ public class UnitServiceImpl implements UnitService {
     public PageInfo pageUnitVo(UnitVo unitVo, int pageNum, int pageSize) {
 
         PageHelper.startPage(pageNum, pageSize);
-        List<UnitBase> unitBases = unitDao.selectByExample(new UnitBaseExample());
+        UnitBaseExample unitBaseExample = new UnitBaseExample();
+        unitBaseExample.createCriteria()
+                .andDeletedEqualTo(false);
+        List<UnitBase> unitBases = unitDao.selectByExample(unitBaseExample);
         List<UnitVo> unitVos = EntityConverter.convert(unitBases, UnitVo.class);
         PageInfo page = new PageInfo(unitBases);
         page.setList(unitVos);

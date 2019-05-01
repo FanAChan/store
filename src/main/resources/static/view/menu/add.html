@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8"/>
+    <title>企业进销存系统</title>
+    <link rel="stylesheet" href="../../layui/css/layui.css">
+    <script src="../../layui/layui.all.js"></script>
+</head>
+<body>
+<div class="layui-fluid" style="padding: 10px">
+
+    <form class="layui-form" id="add_unit">
+        <div class="layui-form-item">
+            <label class="layui-form-label" style="width: 50px">名称</label>
+            <div class="layui-input-block">
+                <input id="name" type="text" name="name" required=""  lay-verify="required" placeholder="请输入单位名称" autocomplete="off" class="layui-input"/>
+            </div>
+        </div>
+        <div class="layui-form-item layui-form-text">
+            <label class="layui-form-label" style="width: 50px">描述</label>
+            <div class="layui-input-inline">
+                <textarea id="description" name="description" placeholder="请输入单位描述" class="layui-textarea"></textarea>
+            </div>
+        </div>
+        <hr/>
+    </form>
+
+</div>
+</body>
+
+</html>

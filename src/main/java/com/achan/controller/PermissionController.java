@@ -34,8 +34,8 @@ public class PermissionController {
     }
 
     @GetMapping("/page")
-    public CommonResponse page(@RequestParam(required = false) PermissionVo permissionVo, int page, int num) {
-        List<PermissionVo> permissionVoList = permissionService.getPermissionPage(permissionVo, page, num);
+    public CommonResponse page(@RequestParam(required = false) PermissionVo permissionVo, int pageNum, int pageSize) {
+        List<PermissionVo> permissionVoList = permissionService.getPermissionPage(permissionVo, pageNum, pageSize);
         HashMap<String, Object> data = new HashMap<>();
         data.put("page", permissionVoList);
         return CommonResponse.success(data);
