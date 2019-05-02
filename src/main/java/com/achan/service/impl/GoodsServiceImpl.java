@@ -1,13 +1,18 @@
 package com.achan.service.impl;
 
 import com.achan.dao.GoodsDao;
+import com.achan.dao.GoodsTypeDao;
 import com.achan.dao.UnitDao;
+import com.achan.entity.GoodsTypeVo;
 import com.achan.entity.GoodsVo;
 import com.achan.entity.base.GoodsBase;
 import com.achan.entity.base.GoodsBaseExample;
+import com.achan.entity.base.GoodsTypeBase;
+import com.achan.entity.base.UnitBase;
 import com.achan.service.GoodsService;
 import com.achan.util.EntityConverter;
 import com.github.pagehelper.PageHelper;
+import com.github.pagehelper.PageInfo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
@@ -15,7 +20,9 @@ import org.springframework.util.ObjectUtils;
 import org.springframework.util.StringUtils;
 
 import java.math.BigDecimal;
-import java.util.List;
+import java.util.*;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 /**
  * @author AChan
@@ -35,6 +42,9 @@ public class GoodsServiceImpl implements GoodsService {
 
     @Autowired
     private UnitDao unitDao;
+
+    @Autowired
+    private GoodsTypeDao goodsTypeDao;
 
     @Override
     public int add(GoodsVo goodsVo) {
@@ -66,21 +76,44 @@ public class GoodsServiceImpl implements GoodsService {
     }
 
     @Override
-    public List<GoodsVo> pageGoodsBase(GoodsVo goodsVo, int page, int num) {
+    public PageInfo pageGoodsBase(GoodsVo goodsVo, int page, int num) {
         PageHelper.startPage(page, num);
         GoodsBaseExample goodsBaseExample = new GoodsBaseExample();
         goodsBaseExample.createCriteria()
-                .andNameLike(goodsVo.getName())
+//                .andNameLike(goodsVo.getName())
                 .andDeletedEqualTo(false);
         List<GoodsBase> goodsBases = goodsDao.selectByExample(goodsBaseExample);
-        List<GoodsVo> list = EntityConverter.convert(goodsBases,GoodsVo.class);
-        return list;
+        List<GoodsVo> goodsVoList = EntityConverter.convert(goodsBases, GoodsVo.class);
+        PageInfo pageInfo = new PageInfo<>(goodsBases);
+
+        Set<String> typeIdSet = new HashSet<>();
+        Set<String> unitIdSet = new HashSet<>();
+
+        goodsVoList.stream().forEach(vo -> {
+            typeIdSet.add(vo.getTypeId());
+            unitIdSet.add(vo.getMajorUnitId());
+            unitIdSet.add(vo.getAuxiliaryUnitId());
+        });
+        List<UnitBase> unitBases = unitDao.selectByIds(new ArrayList<>(unitIdSet));
+        Map<String, String> unitNameMap = unitBases.stream().collect(Collectors.toMap(UnitBase::getId, UnitBase::getName));
+
+        List<GoodsTypeBase> goodsTypeBases = goodsTypeDao.selectByIds(new ArrayList<>(typeIdSet));
+        Map<String, String> typeNameMap = goodsTypeBases.stream().collect(Collectors.toMap(GoodsTypeBase::getId, GoodsTypeBase::getName));
+
+        goodsVoList.stream().forEach(vo -> {
+            vo.setGoodsType(typeNameMap.get(vo.getTypeId()));
+            vo.setMajorUnit(unitNameMap.get(vo.getMajorUnitId()));
+            vo.setAuxiliaryUnit(unitNameMap.get(vo.getAuxiliaryUnitId()));
+        });
+
+        pageInfo.setList(goodsVoList);
+        return pageInfo;
     }
 
     @Override
     public GoodsVo getById(String id) {
         GoodsBase goodsBase = goodsDao.selectByPrimaryKey(id);
-        GoodsVo goodsVo = EntityConverter.convert(goodsBase,GoodsVo.class);
+        GoodsVo goodsVo = EntityConverter.convert(goodsBase, GoodsVo.class);
         return goodsVo;
     }
 

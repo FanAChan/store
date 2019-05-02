@@ -79,6 +79,16 @@ public class UnitServiceImpl implements UnitService {
         return unitVo;
     }
 
+    @Override
+    public List<UnitVo> getAll() {
+        UnitBaseExample unitBaseExample = new UnitBaseExample();
+        unitBaseExample.createCriteria()
+                .andDeletedEqualTo(false);
+        List<UnitBase> unitBaseList = unitDao.selectByExample(unitBaseExample);
+        List<UnitVo> unitVoList = EntityConverter.convert(unitBaseList, UnitVo.class);
+        return unitVoList;
+    }
+
     /**
      * 判断是否同名
      *

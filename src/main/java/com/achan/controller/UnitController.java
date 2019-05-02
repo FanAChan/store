@@ -73,4 +73,12 @@ public class UnitController {
         data.put("unitVo", unitVo);
         return CommonResponse.success(data);
     }
+
+    @GetMapping("all")
+    public CommonResponse getAll() throws StoreException {
+        List<UnitVo> unitVoList = unitService.getAll();
+        HashMap<String, Object> data = new HashMap<>();
+        data.put("all", unitVoList);
+        return CommonResponse.success(data);
+    }
 }

@@ -5,6 +5,7 @@ import com.achan.common.StoreException;
 import com.achan.entity.GoodsVo;
 import com.achan.service.GoodsService;
 import com.achan.util.UUIDUtil;
+import com.github.pagehelper.PageInfo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.ObjectUtils;
 import org.springframework.web.bind.annotation.*;
@@ -68,7 +69,7 @@ public class GoodsController {
     @GetMapping("/page")
     public CommonResponse page(@RequestParam(required = false) GoodsVo goodsVo, int pageNum, int pageSize) throws StoreException {
 
-        List<GoodsVo> goodsVos = goodsService.pageGoodsBase(goodsVo, pageNum, pageSize);
+        PageInfo goodsVos = goodsService.pageGoodsBase(goodsVo, pageNum, pageSize);
         HashMap<String, Object> resultMap = new HashMap<>();
         resultMap.put("page", goodsVos);
         CommonResponse success = CommonResponse.success(resultMap);

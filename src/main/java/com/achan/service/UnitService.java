@@ -1,6 +1,7 @@
 package com.achan.service;
 
 import com.achan.entity.UnitVo;
+import com.achan.entity.base.UnitBase;
 import com.github.pagehelper.PageInfo;
 
 import java.util.List;
@@ -63,4 +64,6 @@ public interface UnitService {
      * @Date 2019/4/17 22:51
      **/
     UnitVo getById(String id);
+
+    List<UnitVo> getAll();
 }
