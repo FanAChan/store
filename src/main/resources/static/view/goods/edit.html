@@ -6,15 +6,23 @@
     <link rel="stylesheet" href="../../layui/css/layui.css">
     <script src="../../layui/layui.all.js"></script>
     <script src="../../module/common.js"></script>
+    <link rel="stylesheet" href="../../module/formSelects/formSelects-v4.css"/>
 </head>
 <body>
 <div class="layui-fluid" style="padding: 10px">
 
     <form class="layui-form" id="add_unit">
+        <div class="layui-form-item layui-disabled">
+            <label class="layui-form-label">ID</label>
+            <div class="layui-input-block">
+                <input id="id" type="text" name="id" required="" lay-verify="required" disabled="disabled"
+                       autocomplete="off" class="layui-input"/>
+            </div>
+        </div>
         <div class="layui-form-item">
             <label class="layui-form-label">编码</label>
             <div class="layui-input-block">
-                <input id="number" type="text" name="name" required="" lay-verify="required" placeholder="请输入商品编码"
+                <input id="number" type="text" name="number" required="" lay-verify="required" placeholder="请输入商品编码"
                        autocomplete="off" class="layui-input"/>
             </div>
         </div>
@@ -29,13 +37,21 @@
             <label for="" class="layui-form-label">商品类型</label>
             <input class="layui-hide" id="typeId">
             <div class="layui-input-block">
-                <input type="text" id="tree" lay-filter="tree" class="layui-input">
+                <select name="city" xm-select="goodsTypeSelect" xm-select-radio=""></select>
             </div>
         </div>
         <div class="layui-form-item">
             <label class="layui-form-label">主单位</label>
+            <input class="layui-hide" id="majorUnitId">
             <div class="layui-input-block">
-                <select id="majorUnitId" name="majorUnit" lay-filter="majorUnit"></select>
+                <select name="majorUnit" xm-select="majorUnitId" xm-select-radio=""></select>
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">生产厂商</label>
+            <div class="layui-input-block">
+                <input id="manufacturer" type="text" name="name" required="" lay-verify="required" placeholder="请输入生产厂商名称"
+                       autocomplete="off" class="layui-input"/>
             </div>
         </div>
         <hr/>
@@ -44,79 +60,91 @@
 </div>
 </body>
 <script type="text/javascript">
-    layui.use(['form', 'treeSelect', 'jquery'], function () {
+    layui.use(['form', 'formSelects', 'jquery'], function () {
         var form = layui.form;
-        var treeSelect = layui.treeSelect;
+        var formSelects = layui.formSelects;
         var $ = layui.jquery;
-        var unitList;
 
+        $('#id').val(parent.data.id);
         $('#number').val(parent.data.number);
         $('#name').val(parent.data.name);
         $('#typeId').val(parent.data.typeId);
+        $('#majorUnitId').val(parent.data.majorUnitId);
+        $('#manufacturer').val(parent.data.manufacturer);
+        console.log(parent.data);
+        var typeId = new Array(parent.data.typeId);
+        var unitId = new Array(parent.data.majorUnitId);
 
-        $.ajax({
-            url: "/store/unit/all",
-            type: "get",
-            success: function (data) {
-                if (data.success) {
-                    unitList = data.data.all;
-                    $.each(unitList, function (index, item) {
-                        console.log(item);
-                        //option  第一个参数是页面显示的值，第二个参数是传递到后台的值
-                        $('#majorUnitId').append(new Option(item.name, item.id));//往下拉菜单里添加元素
-                        //设置value（这个值就可以是在更新的时候后台传递到前台的值）为2的值为默认选中
 
-                    });
-                    $('#majorUnitId').val(parent.data.majorUnitId);
-                    form.render('select');
-                } else {
-
-                }
-            }
-        })
-
-        form.render();
-
-        treeSelect.render({
-            // 选择器
-            elem: '#tree',
-            // 数据
-            data: '/store/goodsType/all',
-            // 异步加载方式：get/post，默认get
-            type: 'get',
-            // 占位符
-            placeholder: '选择商品类型',
-            // 是否开启搜索功能：true/false，默认false
-            search: true,
-            // 点击回调
-            click: function (obj) {
-                var local_data = obj.current;
-                if (!local_data.leaf) {
-                    treeSelect.revokeNode('tree', function (d) {
-                        console.log(d);
-                        console.log(d.treeId);
-                    });
-                    layer.msg("商品类型必须为叶子节点类型");
-                } else {
-                    var typeId = local_data.id;
-                    $('#typeId').val(typeId);
-                }
+        formSelects.data('goodsTypeSelect', 'server', {
+            url: '/store/goodsType/all',
+            beforeSuccess: function (id, url, searchVal, result) {
+                var data = parseData(result.data.data);
+                return data;
             },
-            // 加载完成后的回调函数
-            success: function (d) {
-//                选中节点，根据id筛选
-                if (parent.data.typeId && parent.data.typeId.length != 0) {
-                    treeSelect.checkNode('tree', parent.data.typeId);
-                }
-
-//                获取zTree对象，可以调用zTree方法
-//                var treeObj = treeSelect.zTree('tree');
-//                console.log(treeObj);
-
-//                刷新树结构
-//                treeSelect.refresh();
+            success: function (id, url, searchVal, result) {
+                formSelects.value('goodsTypeSelect', typeId);
             }
         });
+
+        formSelects.data('majorUnitId', 'server', {
+            url: '/store/unit/all',
+            beforeSuccess: function (id, url, searchVal, result) {
+                var data = new Array();
+                $.each(result.data.data, function (index, item) {
+                    var cur = {};
+                    cur.name = item.name;
+                    cur.value = item.id;
+                    data.push(cur);
+                });
+                return data;
+            },
+            success: function (id, url, searchVal, result) {
+                formSelects.value('majorUnitId', unitId);
+            }
+        });
+
+        formSelects.on('goodsTypeSelect', function (id, vals, val, isAdd, isDisabled) {
+            //id:           点击select的id
+            //vals:         当前select已选中的值
+            //val:          当前select点击的值
+            //isAdd:        当前操作选中or取消
+            //isDisabled:   当前选项是否是disabled
+            if (!val.leaf) {
+                layer.msg("商品类型必须为叶子节点类型");
+                ;
+                return false;
+            }
+            $('#typeId').val(val.value);
+            //如果return false, 那么将取消本次操作
+            return true;
+        });
+
+        formSelects.on('majorUnitId', function (id, vals, val, isAdd, isDisabled) {
+            //id:           点击select的id
+            //vals:         当前select已选中的值
+            //val:          当前select点击的值
+            //isAdd:        当前操作选中or取消
+            //isDisabled:   当前选项是否是disabled
+            $('#majorUnitId').val(val.value);
+            //如果return false, 那么将取消本次操作
+            return true;
+        });
+
+        function parseData(data) {
+            var result = new Array();
+            $.each(data, function (index, item) {
+                var cur = {};
+                cur.name = item.name;
+                cur.value = item.id;
+                cur.children = parseData(item.children);
+                cur.leaf = item.leaf;
+                result.push(cur);
+            });
+            return result;
+        }
+
+        form.render();
 
 
     });

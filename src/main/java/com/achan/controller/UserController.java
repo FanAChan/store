@@ -7,6 +7,7 @@ import com.achan.entity.base.UserBase;
 import com.achan.service.UserService;
 import com.achan.util.Encryptor;
 import com.achan.util.UUIDUtil;
+import com.github.pagehelper.PageInfo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.util.ObjectUtils;
@@ -97,7 +98,7 @@ public class UserController {
 
     @GetMapping("/page")
     public CommonResponse page(@RequestParam(required = false) UserVo userVo, int pageNum, int pageSize) {
-        List<UserVo> userVos = userService.selectUserVoPage(userVo, pageNum, pageSize);
+        PageInfo userVos = userService.selectUserVoPage(userVo, pageNum, pageSize);
         HashMap<String, Object> data = new HashMap<>();
         data.put("page", userVos);
         return CommonResponse.success(data);

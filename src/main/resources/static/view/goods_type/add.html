@@ -6,6 +6,7 @@
     <link rel="stylesheet" href="../../layui/css/layui.css">
     <script src="../../layui/layui.all.js"></script>
     <script src="../../module/common.js"></script>
+    <link rel="stylesheet" href="../../module/formSelects/formSelects-v4.css"/>
 </head>
 <body>
 <div class="layui-fluid" style="padding: 10px">
@@ -23,7 +24,7 @@
             <label for="" class="layui-form-label">父类型</label>
             <input class="layui-hide" id="parentId">
             <div class="layui-input-block">
-                <input type="text" id="tree" lay-filter="tree" class="layui-input">
+                <select name="city" xm-select="selectId" xm-select-radio=""></select>
             </div>
         </div>
         <div class="layui-form-item">
@@ -46,57 +47,62 @@
 </div>
 </body>
 <script type="text/javascript">
-    layui.use(['form', 'treeSelect', 'jquery'], function () {
+    layui.use(['form', 'formSelects', 'jquery'], function () {
         var form = layui.form;
-        var treeSelect = layui.treeSelect;
+        var formSelects = layui.formSelects;
         var $ = layui.jquery;
 
         form.render();
 
-        treeSelect.render({
-            // 选择器
-            elem: '#tree',
-            // 数据
-            data: '/store/goodsType/all',
-            // 异步加载方式：get/post，默认get
-            type: 'get',
-            // 占位符
-            placeholder: '选择父类型',
-            // 是否开启搜索功能：true/false，默认false
-            search: true,
-            // 点击回调
-            click: function (obj) {
-                var local_data = obj.current;
-                if (local_data.leaf) {
-                    treeSelect.revokeNode('tree', function (d) {
-                        console.log(d);
-                        console.log(d.treeId);
-                    });
-                    layer.msg("叶子节点类型不允许设置为父类型");
-                }else{
-                    var new_parentId = local_data.id;
-                    $('#parentId').val(new_parentId);
-                }
+        formSelects.data('selectId', 'server', {
+            url: '/store/goodsType/all',
+            beforeSuccess: function (id, url, searchVal, result) {
+                var data = parseData(result.data.data);
+                return data;
             },
-            // 加载完成后的回调函数
-            success: function (d) {
-//                选中节点，根据id筛选
-
-
-//                获取zTree对象，可以调用zTree方法
-//                var treeObj = treeSelect.zTree('tree');
-//                console.log(treeObj);
-
-//                刷新树结构
-//                treeSelect.refresh();
+            success: function (id, url, searchVal, result) {
+                console.log(result);
             }
         });
+        formSelects.on('selectId', function (id, vals, val, isAdd, isDisabled) {
+            //id:           点击select的id
+            //vals:         当前select已选中的值
+            //val:          当前select点击的值
+            //isAdd:        当前操作选中or取消
+            //isDisabled:   当前选项是否是disabled
+            console.log(val);
+            if (val.leaf) {
+                layer.msg("叶子节点类型不允许设置为父类型");
+                return false;
+            }
+            $('#parentId').val(val.value);
+            //如果return false, 那么将取消本次操作
+            return true;
+        });
+
+        formSelects.render('selectId');
 
         //监听指定开关
         form.on('switch(leaf)', function (data) {
             $('#leaf').val((this.checked ? 'true' : 'false'))
         });
+
+        function parseData(data) {
+            var result = new Array();
+            $.each(data, function (index, item) {
+                var cur = {};
+                cur.name = item.name;
+                cur.value = item.id;
+                cur.children = parseData(item.children);
+                cur.leaf = item.leaf;
+                console.log(cur);
+                result.push(cur);
+            });
+            return result;
+        }
     });
+
+
 
 </script>
 </html>

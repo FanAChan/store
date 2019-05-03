@@ -1,6 +1,7 @@
 package com.achan.service;
 
 import com.achan.entity.MenuVo;
+import com.github.pagehelper.PageInfo;
 
 import java.util.List;
 
@@ -14,7 +15,7 @@ public interface MenuService {
 
     List<MenuVo> getAll();
 
-    List<MenuVo> getPage(MenuVo menuVo, int page, int num);
+    PageInfo getPage(MenuVo menuVo, int page, int num);
 
     MenuVo getById(String id);
 

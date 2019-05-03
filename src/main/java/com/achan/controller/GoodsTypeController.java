@@ -79,8 +79,11 @@ public class GoodsTypeController {
     }
 
     @GetMapping("all")
-    public List<GoodsTypeVo> getAll() {
+    public CommonResponse getAll() {
         List<GoodsTypeVo> all = goodsTypeService.getAll();
-        return all;
+        HashMap<String, Object> resultMap = new HashMap<>();
+        resultMap.put("data", all);
+        CommonResponse success = CommonResponse.success(resultMap);
+        return success;
     }
 }

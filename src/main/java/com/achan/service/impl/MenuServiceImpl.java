@@ -6,6 +6,8 @@ import com.achan.entity.base.MenuBase;
 import com.achan.entity.base.MenuBaseExample;
 import com.achan.service.MenuService;
 import com.achan.util.EntityConverter;
+import com.github.pagehelper.PageHelper;
+import com.github.pagehelper.PageInfo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -34,8 +36,16 @@ public class MenuServiceImpl implements MenuService {
     }
 
     @Override
-    public List<MenuVo> getPage(MenuVo menuVo, int page, int num) {
-        return null;
+    public PageInfo getPage(MenuVo menuVo, int page, int num) {
+        PageHelper.startPage(page,num);
+        MenuBaseExample menuBaseExample = new MenuBaseExample();
+        menuBaseExample.createCriteria()
+                .andDeletedEqualTo(false);
+        List<MenuBase> menuBases = menuDao.selectByExample(menuBaseExample);
+        List<MenuVo> menuVoList = EntityConverter.convert(menuBases, MenuVo.class);
+        PageInfo pageInfo = new PageInfo<>(menuBases);
+        pageInfo.setList(menuVoList);
+        return pageInfo;
     }
 
     @Override

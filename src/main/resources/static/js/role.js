@@ -1,9 +1,9 @@
-layui.use(['element', 'table', 'jquery', 'tree', 'form', 'formSelects'], function () {
+layui.use(['element', 'table', 'jquery', 'tree', 'form', 'treeSelect'], function () {
     var element = layui.element;
     var table = layui.table;
     var $ = layui.jquery;
     var form = layui.form;
-    var formSelects = layui.formSelects;
+    var treeSelect = layui.treeSelect;
     //监听表格复选框选择
     table.on('checkbox(demo)', function (obj) {
         var data = obj.data;
@@ -96,10 +96,8 @@ layui.use(['element', 'table', 'jquery', 'tree', 'form', 'formSelects'], functio
                     var new_name = body.find('#name').val();
                     var new_typeId = body.find('#typeId').val();
                     var new_majorUnitId = body.find('#majorUnitId').val();
-                    var new_manufacturer = body.find('#manufacturer').val();
                     if (new_name != local_data.name || new_number != local_data.number
-                        || new_typeId != local_data.typeId || new_majorUnitId != local_data.majorUnitId
-                        || new_manufacturer != local_data.manufacturer) {
+                        || new_typeId != local_data.typeId || new_majorUnitId != local_data.majorUnitId) {
                         $.ajax({
                             url: "/store/goods/update",
                             type: "post",
@@ -108,8 +106,7 @@ layui.use(['element', 'table', 'jquery', 'tree', 'form', 'formSelects'], functio
                                 number: new_number,
                                 name: new_name,
                                 typeId: new_typeId,
-                                majorUnitId: new_majorUnitId,
-                                manufacturer: new_manufacturer
+                                majorUnitId: new_majorUnitId
                             },
                             success: function (data) {
                                 if (data.success) {
@@ -195,7 +192,6 @@ layui.use(['element', 'table', 'jquery', 'tree', 'form', 'formSelects'], functio
                 var name = body.find('#name').val();
                 var typeId = body.find('#typeId').val();
                 var majorUnitId = body.find('#majorUnitId').val();
-                var manufacturer = body.find('#manufacturer').val();
                 $.ajax({
                     url: "/store/goods/add",
                     type: "post",
@@ -203,8 +199,7 @@ layui.use(['element', 'table', 'jquery', 'tree', 'form', 'formSelects'], functio
                         number: number,
                         name: name,
                         typeId: typeId,
-                        majorUnitId: majorUnitId,
-                        manufacturer: manufacturer
+                        majorUnitId: majorUnitId
                     },
                     success: function (data) {
                         if (data.success) {

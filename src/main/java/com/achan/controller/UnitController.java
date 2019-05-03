@@ -78,7 +78,7 @@ public class UnitController {
     public CommonResponse getAll() throws StoreException {
         List<UnitVo> unitVoList = unitService.getAll();
         HashMap<String, Object> data = new HashMap<>();
-        data.put("all", unitVoList);
+        data.put("data", unitVoList);
         return CommonResponse.success(data);
     }
 }

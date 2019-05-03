@@ -1,14 +1,10 @@
-layui.use(['element', 'table', 'jquery', 'tree', 'form', 'formSelects'], function () {
+layui.use(['element', 'table', 'jquery', 'tree', 'form', 'treeSelect','formSelects'], function () {
     var element = layui.element;
     var table = layui.table;
     var $ = layui.jquery;
     var form = layui.form;
+    var treeSelect = layui.treeSelect;
     var formSelects = layui.formSelects;
-    //监听表格复选框选择
-    table.on('checkbox(demo)', function (obj) {
-        var data = obj.data;
-        layer.msg(data.id);
-    });
 
     //监听工具条
     table.on('tool(demo)', function (obj) {
@@ -23,7 +19,7 @@ layui.use(['element', 'table', 'jquery', 'tree', 'form', 'formSelects'], functio
                 area: ['650px', '400px'],
                 shadeClose: true,
                 skin: "layui-layer-molv",
-                content: "../goods/edit.html",
+                content: "../user/edit.html",
                 btn: ["确定"],
                 btnAlign: "c",
                 yes: function (index, layero) {
@@ -47,7 +43,7 @@ layui.use(['element', 'table', 'jquery', 'tree', 'form', 'formSelects'], functio
             //删除事件
             layer.confirm('真的删除行么', function (index) {
                 $.ajax({
-                    url: "/store/goods/delete",
+                    url: "/store/user/delete",
                     type: "post",
                     data: {
                         "id": local_data.id
@@ -82,7 +78,7 @@ layui.use(['element', 'table', 'jquery', 'tree', 'form', 'formSelects'], functio
                 area: ['650px', '400px'],
                 shadeClose: true,
                 skin: "layui-layer-molv",
-                content: "../goods/edit.html",
+                content: "../user/edit.html",
                 btn: ["确定", "取消"],
                 btnAlign: "c",
                 btn2: function (index, layero) {
@@ -96,20 +92,17 @@ layui.use(['element', 'table', 'jquery', 'tree', 'form', 'formSelects'], functio
                     var new_name = body.find('#name').val();
                     var new_typeId = body.find('#typeId').val();
                     var new_majorUnitId = body.find('#majorUnitId').val();
-                    var new_manufacturer = body.find('#manufacturer').val();
                     if (new_name != local_data.name || new_number != local_data.number
-                        || new_typeId != local_data.typeId || new_majorUnitId != local_data.majorUnitId
-                        || new_manufacturer != local_data.manufacturer) {
+                        || new_typeId != local_data.typeId || new_majorUnitId != local_data.majorUnitId) {
                         $.ajax({
-                            url: "/store/goods/update",
+                            url: "/store/user/update",
                             type: "post",
                             data: {
                                 id: local_data.id,
                                 number: new_number,
                                 name: new_name,
                                 typeId: new_typeId,
-                                majorUnitId: new_majorUnitId,
-                                manufacturer: new_manufacturer
+                                majorUnitId: new_majorUnitId
                             },
                             success: function (data) {
                                 if (data.success) {
@@ -142,18 +135,18 @@ layui.use(['element', 'table', 'jquery', 'tree', 'form', 'formSelects'], functio
     //渲染数据表格
     table.render({
         elem: '#demo'
-        , url: '/store/goods/page'
+        , url: '/store/user/page'
         , cols: [[ //标题栏
             {type: 'checkbox', fixed: 'left'}
             , {type: 'numbers', title: '序号', align: 'center', fixed: 'left'}
             , {field: 'id', title: 'ID', fixed: 'left'}
-            , {field: 'number', title: '编码', sort: true}
-            , {field: 'goodsType', title: '类型'}
-            , {field: 'majorUnit', title: '主单位'}
+            , {field: 'name', title: '名字'}
+            , {field: 'password', title: '密码'}
+            , {field: 'phone', title: '手机'}
+            , {field: 'mail', title: '邮箱地址'}
             // , {field: 'auxiliaryUnit', title: '辅类型', minWidth: 250}
             // , {field: 'inPrice', title: '进价', minWidth: 250}
             // , {field: 'outPrice', title: '售价', minWidth: 250}
-            , {field: 'manufacturer', title: '生产厂商'}
             , {fixed: 'right', title: '操作', toolbar: '#barDemo'}
         ]]
         , toolbar: '#toolDemo'
@@ -186,25 +179,34 @@ layui.use(['element', 'table', 'jquery', 'tree', 'form', 'formSelects'], functio
             area: ['650px', '400px'],
             shadeClose: true,
             skin: "layui-layer-molv",
-            content: "../goods/add.html",
+            content: "../user/add.html",
             btn: ["确定", "取消"],
             btnAlign: "c",
             yes: function (index, layero) {
                 var body = layer.getChildFrame('body', index);
-                var number = body.find('#number').val();
                 var name = body.find('#name').val();
-                var typeId = body.find('#typeId').val();
-                var majorUnitId = body.find('#majorUnitId').val();
-                var manufacturer = body.find('#manufacturer').val();
+                var password = body.find('#password').val();
+                var phone = body.find('#phone').val();
+                var mail = body.find('#mail').val();
+                var rolesString = body.find('#roles').val();
+                var rolesId = rolesString.split(",");
+                var roles = new Array();
+                $.each(rolesId,function (index, item) {
+                    var role ={};
+                    role.id = item;
+                    roles.push(role);
+                })
+                console.log(roles);
+                console.log(rolesString.split(","));
                 $.ajax({
-                    url: "/store/goods/add",
+                    url: "/store/user/add",
                     type: "post",
                     data: {
-                        number: number,
                         name: name,
-                        typeId: typeId,
-                        majorUnitId: majorUnitId,
-                        manufacturer: manufacturer
+                        mail: mail,
+                        phone: phone,
+                        password:password
+                        // roles: roles
                     },
                     success: function (data) {
                         if (data.success) {
@@ -223,6 +225,34 @@ layui.use(['element', 'table', 'jquery', 'tree', 'form', 'formSelects'], functio
                         layer.msg("错误");
                     }
                 })
+                layer.close(index);
+            },
+            btn2: function (index, layero) {
+                layer.close(index);
+            },
+            success: function (layero, index) {
+
+            },
+            cancel: function (index, layero) {
+                layer.close(index)
+            }
+        });
+    });
+
+    //新增事件
+    $(document).on('click', '#test', function () {
+        layer.open({
+            type: 2,
+            title: "测试",
+            closeBtn: 1,
+            area: ['650px', '400px'],
+            shadeClose: true,
+            skin: "layui-layer-molv",
+            content: "../user/test.html",
+            btn: ["确定", "取消"],
+            btnAlign: "c",
+            yes: function (index, layero) {
+
                 layer.close(index);
             },
             btn2: function (index, layero) {

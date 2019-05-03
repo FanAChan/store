@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8"/>
+    <title>企业进销存系统</title>
+    <link rel="stylesheet" href="../../layui/css/layui.css">
+    <script src="../../layui/layui.all.js"></script>
+    <script src="../../module/common.js"></script>
+    <link rel="stylesheet" href="../../module/formSelects/formSelects-v4.css"/>
+</head>
+<body>
+<div>
+    <div class="layui-form">
+        <select name="city" xm-select="example1_1">
+            <option value="1">北京</option>
+            <option value="2">上海</option>
+            <option value="3">广州</option>
+            <option value="4">深圳</option>
+            <option value="5">天津</option>
+        </select>
+        <js>
+
+        </js>
+    </div>
+</div>
+<script type="text/javascript">
+    layui.use(['form', 'jquery', 'formSelects'], function () {
+        var form = layui.form;
+        var $ = layui.jquery;
+        var formSelects = layui.formSelects;
+
+        formSelects.on('example1_1', function(id, vals, val, isAdd, isDisabled){
+            //id:           点击select的id
+            //vals:         当前select已选中的值
+            //val:          当前select点击的值
+            //isAdd:        当前操作选中or取消
+            //isDisabled:   当前选项是否是disabled
+            console.log("当前选择了: " + JSON.stringify(vals));
+        }, true);
+        formSelects.render('example1_1');
+
+    });
+</script>
+</body>
+</html>

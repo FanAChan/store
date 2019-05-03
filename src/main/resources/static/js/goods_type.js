@@ -1,9 +1,9 @@
-layui.use(['element', 'table', 'jquery', 'tree', 'form', 'treeSelect'], function () {
+layui.use(['element', 'table', 'jquery', 'tree', 'form', 'formSelects'], function () {
     var element = layui.element;
     var table = layui.table;
     var $ = layui.jquery;
     var form = layui.form;
-    var treeSelect = layui.treeSelect;
+    var formSelects = layui.formSelects;
     //监听表格复选框选择
     table.on('checkbox(demo)', function (obj) {
         var data = obj.data;

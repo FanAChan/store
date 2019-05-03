@@ -3,6 +3,7 @@ package com.achan.controller;
 import com.achan.common.CommonResponse;
 import com.achan.entity.MenuVo;
 import com.achan.service.MenuService;
+import com.github.pagehelper.PageInfo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -34,7 +35,7 @@ public class MenuController {
 
     @GetMapping("/page")
     public CommonResponse page(@RequestParam(required = false) MenuVo menuVo, int pageNum, int pageSize) {
-        List<MenuVo> menuVoPage = menuService.getPage(menuVo, pageNum, pageSize);
+        PageInfo menuVoPage = menuService.getPage(menuVo, pageNum, pageSize);
         HashMap<String, Object> data = new HashMap<>();
         data.put("page", menuVoPage);
         return CommonResponse.success(data);

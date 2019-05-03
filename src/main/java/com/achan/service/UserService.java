@@ -2,6 +2,7 @@ package com.achan.service;
 
 import com.achan.entity.UserVo;
 import com.achan.entity.base.UserBase;
+import com.github.pagehelper.PageInfo;
 
 import java.util.List;
 
@@ -49,7 +50,7 @@ public interface UserService {
      * @param num
      * @return
      */
-    List<UserVo> selectUserVoPage(UserVo userVo, int page, int num);
+    PageInfo selectUserVoPage(UserVo userVo, int page, int num);
 
     /**
      * 根据Id获取用户基本信息

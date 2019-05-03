@@ -62,7 +62,7 @@ public class RoleController {
     public CommonResponse getAll() {
         List<RoleVo> roleVoList = roleService.getAll();
         HashMap<String, Object> data = new HashMap<>();
-        data.put("roleVoList", roleVoList);
+        data.put("data", roleVoList);
         return CommonResponse.success(data);
     }
 

@@ -12,6 +12,7 @@ import com.achan.entity.base.UserBaseExample;
 import com.achan.service.UserService;
 import com.achan.util.Encryptor;
 import com.achan.util.EntityConverter;
+import com.github.pagehelper.PageInfo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
@@ -75,8 +76,15 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public List<UserVo> selectUserVoPage(UserVo userVo, int page, int num) {
-        return null;
+    public PageInfo selectUserVoPage(UserVo userVo, int page, int num) {
+        UserBaseExample userBaseExample = new UserBaseExample();
+        userBaseExample.createCriteria()
+                .andDeletedEqualTo(false);
+        List<UserBase> userBaseList = userDao.selectByExample(userBaseExample);
+        List<UserVo> userVoList = EntityConverter.convert(userBaseList, UserVo.class);
+        PageInfo pageInfo = new PageInfo<>(userBaseList);
+        pageInfo.setList(userVoList);
+        return pageInfo;
     }
 
     @Override
