@@ -1,6 +1,7 @@
 package com.achan.service;
 
 import com.achan.entity.RoleVo;
+import com.github.pagehelper.PageInfo;
 
 import java.util.List;
 
@@ -52,7 +53,7 @@ public interface RoleService {
      * @Author AChan
      * @Date 2019/4/18 11:44
      **/
-    List<RoleVo> pageRole(RoleVo roleVo, int page, int num);
+    PageInfo pageRole(RoleVo roleVo, int page, int num);
 
     /**
      * 获取所有角色
@@ -75,4 +76,6 @@ public interface RoleService {
     RoleVo getById(String id);
 
     List<RoleVo> getByIdList(List<String> idList);
+
+    List<RoleVo> selectByUser(String userId);
 }

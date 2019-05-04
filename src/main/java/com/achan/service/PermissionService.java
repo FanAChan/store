@@ -1,6 +1,7 @@
 package com.achan.service;
 
 import com.achan.entity.PermissionVo;
+import com.github.pagehelper.PageInfo;
 
 import java.util.List;
 
@@ -14,7 +15,7 @@ public interface PermissionService {
 
     List<PermissionVo> getAllPermission();
 
-    List<PermissionVo> getPermissionPage(PermissionVo permissionVo, int page, int num);
+    PageInfo getPermissionPage(PermissionVo permissionVo, int page, int num);
 
     List<PermissionVo> getPermissionByMenu(List<String> menuIdList);
 

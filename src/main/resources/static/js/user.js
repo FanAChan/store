@@ -1,4 +1,4 @@
-layui.use(['element', 'table', 'jquery', 'tree', 'form', 'treeSelect','formSelects'], function () {
+layui.use(['element', 'table', 'jquery', 'tree', 'form', 'treeSelect', 'formSelects'], function () {
     var element = layui.element;
     var table = layui.table;
     var $ = layui.jquery;
@@ -27,9 +27,6 @@ layui.use(['element', 'table', 'jquery', 'tree', 'form', 'treeSelect','formSelec
                 },
                 success: function (layero, index) {
                     var body = layer.getChildFrame('body', index);
-                    body.find('#id').val(local_data.id);
-                    body.find('#name').val(local_data.name);
-                    body.find('#description').val(local_data.description);
                     body.find('input').attr('disabled', 'disabled');
                     body.find('input').addClass('layui-disabled');
                     body.find('textarea').attr('disabled', 'disabled');
@@ -88,22 +85,37 @@ layui.use(['element', 'table', 'jquery', 'tree', 'form', 'treeSelect','formSelec
                 },
                 yes: function (index, layero) {
                     var body = layer.getChildFrame('body', index);
-                    var new_number = body.find('#number').val();
                     var new_name = body.find('#name').val();
-                    var new_typeId = body.find('#typeId').val();
-                    var new_majorUnitId = body.find('#majorUnitId').val();
-                    if (new_name != local_data.name || new_number != local_data.number
-                        || new_typeId != local_data.typeId || new_majorUnitId != local_data.majorUnitId) {
+                    var new_password = body.find('#password').val();
+                    var new_phone = body.find('#phone').val();
+                    var new_mail = body.find('#mail').val();
+                    var user_roles = new Array();
+                    var roleChange = body.find('#roleChange').val();
+                    var roles = body.find('#roles').val();
+                    if (new_name != local_data.name
+                        || new_phone != local_data.phone || new_mail != local_data.mail
+                         || roleChange) {
+                        var dto = {
+                            id: local_data.id,
+                            name: new_name,
+                            password: new_password,
+                            phone: new_phone,
+                            mail: new_mail
+                        };
+                        if (roleChange) {
+                            var user_roles = new Array();
+                            $.each(roles.split(","), function (index, item) {
+                                var role = {};
+                                role.id = item;
+                                user_roles.push(role);
+                            })
+                            dto.roles = user_roles;
+                        }
                         $.ajax({
                             url: "/store/user/update",
                             type: "post",
-                            data: {
-                                id: local_data.id,
-                                number: new_number,
-                                name: new_name,
-                                typeId: new_typeId,
-                                majorUnitId: new_majorUnitId
-                            },
+                            contentType: "application/json",
+                            data: JSON.stringify(dto),
                             success: function (data) {
                                 if (data.success) {
                                     layer.msg(data.message);
@@ -191,23 +203,23 @@ layui.use(['element', 'table', 'jquery', 'tree', 'form', 'treeSelect','formSelec
                 var rolesString = body.find('#roles').val();
                 var rolesId = rolesString.split(",");
                 var roles = new Array();
-                $.each(rolesId,function (index, item) {
-                    var role ={};
+                $.each(rolesId, function (index, item) {
+                    var role = {};
                     role.id = item;
                     roles.push(role);
                 })
-                console.log(roles);
-                console.log(rolesString.split(","));
+                var result = {
+                    name: name,
+                    mail: mail,
+                    phone: phone,
+                    password: password,
+                    roles: roles
+                }
                 $.ajax({
                     url: "/store/user/add",
                     type: "post",
-                    data: {
-                        name: name,
-                        mail: mail,
-                        phone: phone,
-                        password:password
-                        // roles: roles
-                    },
+                    contentType: "application/json",
+                    data: JSON.stringify(result),
                     success: function (data) {
                         if (data.success) {
                             layer.close(index);
@@ -225,34 +237,6 @@ layui.use(['element', 'table', 'jquery', 'tree', 'form', 'treeSelect','formSelec
                         layer.msg("错误");
                     }
                 })
-                layer.close(index);
-            },
-            btn2: function (index, layero) {
-                layer.close(index);
-            },
-            success: function (layero, index) {
-
-            },
-            cancel: function (index, layero) {
-                layer.close(index)
-            }
-        });
-    });
-
-    //新增事件
-    $(document).on('click', '#test', function () {
-        layer.open({
-            type: 2,
-            title: "测试",
-            closeBtn: 1,
-            area: ['650px', '400px'],
-            shadeClose: true,
-            skin: "layui-layer-molv",
-            content: "../user/test.html",
-            btn: ["确定", "取消"],
-            btnAlign: "c",
-            yes: function (index, layero) {
-
                 layer.close(index);
             },
             btn2: function (index, layero) {

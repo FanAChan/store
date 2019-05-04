@@ -66,8 +66,8 @@ public class UserController {
     }
 
     @PostMapping("/update")
-    public CommonResponse update(UserVo userVo) {
-        int update = userService.updateUserBase(userVo);
+    public CommonResponse update(@RequestBody UserVo userVo) {
+        int update = userService.updateUser(userVo);
         if (update == 0) {
             return CommonResponse.operationFailed();
         }

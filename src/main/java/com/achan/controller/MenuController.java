@@ -33,6 +33,14 @@ public class MenuController {
         return CommonResponse.success(data);
     }
 
+    @GetMapping("/roleMenu")
+    public CommonResponse getRoleMenu(String id) {
+        List<String> all = menuService.getByRole(id);
+        HashMap<String, Object> data = new HashMap<>();
+        data.put("roleMenu", all);
+        return CommonResponse.success(data);
+    }
+
     @GetMapping("/page")
     public CommonResponse page(@RequestParam(required = false) MenuVo menuVo, int pageNum, int pageSize) {
         PageInfo menuVoPage = menuService.getPage(menuVo, pageNum, pageSize);
@@ -46,6 +54,14 @@ public class MenuController {
         MenuVo menuVo = menuService.getById(id);
         HashMap<String, Object> data = new HashMap<>();
         data.put("menuVo", menuVo);
+        return CommonResponse.success(data);
+    }
+
+    @GetMapping("/limited")
+    public CommonResponse getLimited() {
+        List<MenuVo> all = menuService.getLimited();
+        HashMap<String, Object> data = new HashMap<>();
+        data.put("menuVoList", all);
         return CommonResponse.success(data);
     }
 }

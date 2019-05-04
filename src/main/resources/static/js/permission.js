@@ -24,7 +24,7 @@ layui.use(['element', 'table', 'jquery'], function () {
                 area: ['650px', '400px'],
                 shadeClose: true,
                 skin: "layui-layer-molv",
-                content: "../menu/edit.html",
+                content: "../permission/edit.html",
                 btn: ["确定"],
                 btnAlign: "c",
                 yes: function (index, layero) {
@@ -47,17 +47,17 @@ layui.use(['element', 'table', 'jquery'], function () {
     //渲染数据表格
     table.render({
         elem: '#demo'
-        , url: '/store/menu/page'
+        , url: '/store/permission/page'
         , cols: [[ //标题栏
             {type: 'checkbox', fixed: 'left'}
             , {type: 'numbers', title: '序号', align: 'center', width: 80, fixed: 'left'}
-            , {field: 'id', title: 'ID', width: 250, sort: true, fixed: 'left'}
-            , {field: 'name', title: '名称', width: 250}
-            , {field: 'url', title: '路径', width: 250}
-            , {field: 'description', title: '描述', width: 250}
-            , {field: 'image', title: '图标', width: 250}
-            , {field: 'seq', title: '排序', width: 250}
-            , {field: 'limited', title: '受限', width: 250}
+            , {field: 'id', title: 'ID', sort: true, fixed: 'left'}
+            , {field: 'name', title: '名称'}
+            , {field: 'url', title: '路径'}
+            , {field: 'description', title: '描述'}
+            , {field: 'menu', title: '所属菜单'}
+            , {field: 'seq', title: '排序'}
+            , {field: 'limited', title: '受限'}
             , {fixed: 'right', title: '操作', toolbar: '#barDemo', width: 150}
         ]]
         , toolbar: '#toolDemo'

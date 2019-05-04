@@ -1,6 +1,8 @@
 package com.achan.dao;
 
 import com.achan.dao.base.UserRoleBaseMapper;
+import com.achan.entity.base.UserRoleBase;
+import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 
@@ -19,5 +21,9 @@ public interface UserRoleDao extends UserRoleBaseMapper {
      * @param userId
      * @return java.util.List<java.lang.String>
      **/
-    List<String> selectByUser(String userId);
+    List<String> selectByUser(@Param("user_id") String userId);
+
+    int deleteUserRole(@Param("user_id") String id);
+
+    int batcnInsert(@Param("list") List<UserRoleBase> userRoleBaseList);
 }

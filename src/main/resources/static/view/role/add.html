@@ -5,21 +5,31 @@
     <title>企业进销存系统</title>
     <link rel="stylesheet" href="../../layui/css/layui.css">
     <script src="../../layui/layui.all.js"></script>
+    <script src="../../module/common.js"></script>
+    <link rel="stylesheet" href="../../module/formSelects/formSelects-v4.css"/>
 </head>
 <body>
 <div class="layui-fluid" style="padding: 10px">
 
     <form class="layui-form" id="add_unit">
         <div class="layui-form-item">
-            <label class="layui-form-label" style="width: 50px">名称</label>
+            <label class="layui-form-label">名称</label>
             <div class="layui-input-block">
-                <input id="name" type="text" name="name" required=""  lay-verify="required" placeholder="请输入单位名称" autocomplete="off" class="layui-input"/>
+                <input id="name" type="text" name="name" required="" lay-verify="required" placeholder="请输入角色名称"
+                       autocomplete="off" class="layui-input"/>
             </div>
         </div>
         <div class="layui-form-item layui-form-text">
-            <label class="layui-form-label" style="width: 50px">描述</label>
-            <div class="layui-input-inline">
-                <textarea id="description" name="description" placeholder="请输入单位描述" class="layui-textarea"></textarea>
+            <label class="layui-form-label" >描述</label>
+            <div class="layui-input-block">
+                <textarea id="description" name="description" placeholder="请输入角色描述" class="layui-textarea"></textarea>
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">授权菜单</label>
+            <input class="layui-hide" id="menus">
+            <div class="layui-input-block">
+                <select name="city" xm-select="menuSelect"></select>
             </div>
         </div>
         <hr/>
@@ -27,5 +37,44 @@
 
 </div>
 </body>
+<script type="text/javascript">
+    layui.use(['form', 'jquery', 'formSelects'], function () {
+        var form = layui.form;
+        var $ = layui.jquery;
+        var formSelects = layui.formSelects;
 
+
+        formSelects.data('menuSelect', 'server', {
+            url: '/store/menu/limited',
+            beforeSuccess: function (id, url, searchVal, result) {
+                var data = new Array();
+                $.each(result.data.menuVoList, function (index, item) {
+                    var cur = {};
+                    cur.name = item.name;
+                    cur.value = item.id;
+                    data.push(cur);
+                });
+                return data;
+            },
+            success: function (id, url, searchVal, result) {
+                console.log(result);
+            }
+        });
+
+        formSelects.on('menuSelect', function (id, vals, val, isAdd, isDisabled) {
+            //id:           点击select的id
+            //vals:         当前select已选中的值
+            //val:          当前select点击的值
+            //isAdd:        当前操作选中or取消
+            //isDisabled:   当前选项是否是disabled
+            var menus = formSelects.value(id, 'val');
+            $('#menus').val(menus);
+            console.log(menus);
+        }, true);
+
+        formSelects.render('menuSelect');
+
+
+    });
+</script>
 </html>

@@ -1,9 +1,6 @@
 package com.achan.service.impl;
 
-import com.achan.dao.MenuDao;
-import com.achan.dao.RoleDao;
-import com.achan.dao.RoleMenuDao;
-import com.achan.dao.RolePermissionDao;
+import com.achan.dao.*;
 import com.achan.entity.MenuVo;
 import com.achan.entity.RoleVo;
 import com.achan.entity.base.RoleBase;
@@ -11,14 +8,20 @@ import com.achan.entity.base.RoleBaseExample;
 import com.achan.entity.base.RoleMenuBase;
 import com.achan.service.RoleService;
 import com.achan.util.EntityConverter;
+import com.achan.util.UUIDUtil;
+import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
+import com.github.pagehelper.PageInfo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.ObjectUtils;
 import org.springframework.util.StringUtils;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * @author AChan
@@ -38,6 +41,9 @@ public class RoleServiceImpl implements RoleService {
 
     @Autowired
     private RolePermissionDao rolePermissionDao;
+
+    @Autowired
+    private UserRoleDao userRoleDao;
 
     @Autowired
     private RoleMenuDao roleMenuDao;
@@ -63,36 +69,51 @@ public class RoleServiceImpl implements RoleService {
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public int add(RoleVo role) {
-        if (checkNameExit(role)) {
+        if (!valid(role) && checkNameExit(role)) {
             return 0;
         }
+        List<RoleMenuBase> roleMenuBases = this.buildRoleMenuBase(role);
         role.setDeleted(false);
-        return roleDao.insert(role);
+        int insert = roleDao.insert(role);
+        if (insert > 0) {
+            insert = roleMenuDao.batchInset(roleMenuBases);
+        }
+        return insert;
     }
 
     @Override
     public int update(RoleVo role) {
-        if (checkNameExit(role)) {
+        if (!valid(role) && checkNameExit(role)) {
             return 0;
         }
         role.setDeleted(false);
-        return roleDao.updateByPrimaryKey(role);
+        role.setDeleted(false);
+        int insert = roleDao.updateByPrimaryKey(role);
+        if (insert > 0 && !CollectionUtils.isEmpty(role.getMenus())) {
+            List<RoleMenuBase> roleMenuBases = this.buildRoleMenuBase(role);
+            roleMenuDao.deleteByRoleId(role.getId());
+            insert = roleMenuDao.batchInset(roleMenuBases);
+        }
+        return insert;
     }
 
     @Override
-    public List<RoleVo> pageRole(RoleVo roleVo, int page, int num) {
+    public PageInfo pageRole(RoleVo roleVo, int page, int num) {
         PageHelper.startPage(page, num);
         RoleBaseExample roleBaseExample = new RoleBaseExample();
         RoleBaseExample.Criteria criteria = roleBaseExample.createCriteria();
         criteria.andDeletedEqualTo(false);
-        String name = roleVo.getName();
-        if (!StringUtils.isEmpty(name)) {
-            criteria.andNameLike(name);
-        }
+//        String name = roleVo.getName();
+//        if (!StringUtils.isEmpty(name)) {
+//            criteria.andNameLike(name);
+//        }
         List<RoleBase> roleBases = roleDao.selectByExample(roleBaseExample);
         List<RoleVo> roleVos = EntityConverter.convert(roleBases, RoleVo.class);
-        return roleVos;
+        PageInfo pageInfo = new PageInfo<>(roleBases);
+        pageInfo.setList(roleVos);
+        return pageInfo;
     }
 
     @Override
@@ -109,6 +130,17 @@ public class RoleServiceImpl implements RoleService {
         List<MenuVo> menuVoList = menuDao.selectByIds(menuIdList);
 
         return null;
+    }
+
+    @Override
+    public List<RoleVo> selectByUser(String userId) {
+        List<String> roleIds = userRoleDao.selectByUser(userId);
+
+        List<RoleVo> roleVoList = new ArrayList<>();
+        if (!CollectionUtils.isEmpty(roleIds)) {
+            roleVoList = roleDao.selectByRoleIds(roleIds);
+        }
+        return roleVoList;
     }
 
     /**
@@ -143,13 +175,24 @@ public class RoleServiceImpl implements RoleService {
             return false;
         }
         String name = roleVo.getName();
-        String descriptiontion = roleVo.getDescriptiontion();
+        String description = roleVo.getDescription();
         if (StringUtils.isEmpty(name) || name.length() > NAME_LENGTH) {
             return false;
         }
-        if (StringUtils.isEmpty(descriptiontion) || descriptiontion.length() > DESCRIPTION_LENGTH) {
+        if (StringUtils.isEmpty(description) || description.length() > DESCRIPTION_LENGTH) {
             return false;
         }
         return true;
+    }
+
+    private List<RoleMenuBase> buildRoleMenuBase(RoleVo role) {
+        List<RoleMenuBase> list = role.getMenus().stream().map(menu -> {
+            RoleMenuBase roleMenuBase = new RoleMenuBase();
+            roleMenuBase.setId(UUIDUtil.randomID());
+            roleMenuBase.setMenuId(menu.getId());
+            roleMenuBase.setRoleId(role.getId());
+            return roleMenuBase;
+        }).collect(Collectors.toList());
+        return list;
     }
 }

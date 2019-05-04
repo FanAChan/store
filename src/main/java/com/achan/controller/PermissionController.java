@@ -3,6 +3,7 @@ package com.achan.controller;
 import com.achan.common.CommonResponse;
 import com.achan.entity.PermissionVo;
 import com.achan.service.PermissionService;
+import com.github.pagehelper.PageInfo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -35,7 +36,7 @@ public class PermissionController {
 
     @GetMapping("/page")
     public CommonResponse page(@RequestParam(required = false) PermissionVo permissionVo, int pageNum, int pageSize) {
-        List<PermissionVo> permissionVoList = permissionService.getPermissionPage(permissionVo, pageNum, pageSize);
+        PageInfo permissionVoList = permissionService.getPermissionPage(permissionVo, pageNum, pageSize);
         HashMap<String, Object> data = new HashMap<>();
         data.put("page", permissionVoList);
         return CommonResponse.success(data);

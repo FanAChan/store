@@ -46,8 +46,8 @@ public class GoodsTypeController {
 
     @PostMapping("/delete")
     public CommonResponse delete(String id) {
-        int add = goodsTypeService.delete(id);
-        if (add == 0) {
+        int delete = goodsTypeService.delete(id);
+        if (delete == 0) {
             return CommonResponse.operationFailed();
         }
         return CommonResponse.operationSuccess();

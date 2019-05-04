@@ -50,7 +50,7 @@ public class GoodsTypeServiceImpl implements GoodsTypeService {
         goodsTypeBase.setId(id);
         goodsTypeBase.setDeleted(true);
         int i = goodsTypeDao.updateByPrimaryKeySelective(goodsTypeBase);
-        return 0;
+        return i;
     }
 
     @Override

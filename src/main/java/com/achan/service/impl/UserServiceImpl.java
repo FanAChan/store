@@ -9,17 +9,22 @@ import com.achan.entity.RoleVo;
 import com.achan.entity.UserVo;
 import com.achan.entity.base.UserBase;
 import com.achan.entity.base.UserBaseExample;
+import com.achan.entity.base.UserRoleBase;
+import com.achan.entity.base.UserRoleBaseExample;
 import com.achan.service.UserService;
 import com.achan.util.Encryptor;
 import com.achan.util.EntityConverter;
+import com.achan.util.UUIDUtil;
 import com.github.pagehelper.PageInfo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.ObjectUtils;
 import org.springframework.util.StringUtils;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * @author AChan
@@ -46,13 +51,19 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public int add(UserVo userVo) {
-        if (checkPhoneExit(userVo)) {
+        if (!checkUserBase(userVo) && checkPhoneExit(userVo)) {
             return 0;
         }
         String credential = Encryptor.createCredential(userVo.getPhone(), userVo.getPassword());
         userVo.setPassword(credential);
         userVo.setDeleted(false);
-        return userDao.insert(userVo);
+        int insert = userDao.insert(userVo);
+        List<RoleVo> roles = userVo.getRoles();
+        if (insert > 0 && !CollectionUtils.isEmpty(roles)) {
+            List<UserRoleBase> userRoleBaseList = buildUserRoleBase(roles, userVo.getId());
+            insert = userRoleDao.batcnInsert(userRoleBaseList);
+        }
+        return insert;
     }
 
     @Override
@@ -61,18 +72,33 @@ public class UserServiceImpl implements UserService {
         userBase.setId(id);
         userBase.setDeleted(true);
         //删除用户，删除用户权限等
-        return userDao.updateByPrimaryKeySelective(userBase);
+        int update = userDao.updateByPrimaryKeySelective(userBase);
+        if (update > 0) {
+            update = userRoleDao.deleteUserRole(id);
+        }
+        return update;
     }
 
     @Override
-    public int updateUserBase(UserVo userVo) {
-        if (checkPhoneExit(userVo)) {
+    @Transactional(rollbackFor = Exception.class)
+    public int updateUser(UserVo userVo) {
+        if (!checkUserBase(userVo) && checkPhoneExit(userVo)) {
             return 0;
         }
         String credential = Encryptor.createCredential(userVo.getName(), userVo.getPassword());
         userVo.setPassword(credential);
         userVo.setDeleted(false);
-        return userDao.updateByPrimaryKey(userVo);
+        int update = userDao.updateByPrimaryKey(userVo);
+        List<RoleVo> roles = userVo.getRoles();
+        if (update > 0 && !CollectionUtils.isEmpty(roles)) {
+
+            userRoleDao.deleteUserRole(userVo.getId());
+
+            List<UserRoleBase> userRoleBaseList = buildUserRoleBase(roles, userVo.getId());
+
+            update = userRoleDao.batcnInsert(userRoleBaseList);
+        }
+        return update;
     }
 
     @Override
@@ -129,7 +155,6 @@ public class UserServiceImpl implements UserService {
         List<String> roleIdList = userRoleDao.selectByUser(userVo.getId());
 
 
-
         List<RoleVo> roleVoList = roleDao.selectByRoleIds(roleIdList);
 
         userVo.setRoles(roleVoList);
@@ -182,5 +207,16 @@ public class UserServiceImpl implements UserService {
             return false;
         }
         return true;
+    }
+
+    private List<UserRoleBase> buildUserRoleBase(List<RoleVo> roles, String userId) {
+        List<UserRoleBase> userRoleBaseList = roles.stream().map(roleVo -> {
+            UserRoleBase userRoleBase = new UserRoleBase();
+            userRoleBase.setId(UUIDUtil.randomID());
+            userRoleBase.setRoleId(roleVo.getId());
+            userRoleBase.setUserId(userId);
+            return userRoleBase;
+        }).collect(Collectors.toList());
+        return userRoleBaseList;
     }
 }

@@ -33,14 +33,14 @@ public interface UserService {
     int delete(String id);
 
     /**
-     * 修改用户基本信息
+     * 修改用户
      *
      * @param userVo
      * @return int
      * @Author AChan
      * @Date 2019/4/16 15:51
      **/
-    int updateUserBase(UserVo userVo);
+    int updateUser(UserVo userVo);
 
     /**
      * 分页查询

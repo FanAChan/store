@@ -16,18 +16,18 @@ public class RoleVo extends RoleBase {
     /**
      * 角色授权菜单
      */
-    private List<Menu> menus;
+    private List<MenuVo> menus;
 
     /**
      * 角色授权菜单下权限，根据菜单隔离
      */
     private Map<String, List<PermissionVo>> menuToPermissions;
 
-    public List<Menu> getMenus() {
+    public List<MenuVo> getMenus() {
         return menus;
     }
 
-    public void setMenus(List<Menu> menus) {
+    public void setMenus(List<MenuVo> menus) {
         this.menus = menus;
     }
 

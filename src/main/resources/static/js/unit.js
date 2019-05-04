@@ -170,57 +170,56 @@ layui.use(['element', 'table', 'jquery'], function () {
         page: true
 
     });
-});
 
-//新增事件
-function add_button() {
-    layer.open({
-        type: 2,
-        title: "新增",
-        closeBtn: 1,
-        area: ['400px', '300px'],
-        shadeClose: true,
-        skin: "layui-layer-molv",
-        content: "../unit/add.html",
-        btn: ["确定", "取消"],
-        btnAlign: "c",
-        yes: function (index, layero) {
-            var body = layer.getChildFrame('body', index);
-            var name = body.find('#name').val();
-            var description = body.find('#description').val();
-            $.ajax({
-                url: "/store/unit/add",
-                type: "post",
-                data: {
-                    name: name,
-                    description: description
-                },
-                success: function (data) {
-                    if (data.success) {
-                        layer.close(index);
-                        layer.msg(data.message);
-                        table.reload('demo', {
-                            where: {
-                                data: $('#demo').val()
-                            }
-                        })
-                    } else {
-                        layer.msg(data.message);
+    $(document).on('click', '#add',function () {
+        layer.open({
+            type: 2,
+            title: "新增",
+            closeBtn: 1,
+            area: ['400px', '300px'],
+            shadeClose: true,
+            skin: "layui-layer-molv",
+            content: "../unit/add.html",
+            btn: ["确定", "取消"],
+            btnAlign: "c",
+            yes: function (index, layero) {
+                var body = layer.getChildFrame('body', index);
+                var name = body.find('#name').val();
+                var description = body.find('#description').val();
+                $.ajax({
+                    url: "/store/unit/add",
+                    type: "post",
+                    data: {
+                        name: name,
+                        description: description
+                    },
+                    success: function (data) {
+                        if (data.success) {
+                            layer.close(index);
+                            layer.msg(data.message);
+                            table.reload('demo', {
+                                where: {
+                                    data: $('#demo').val()
+                                }
+                            })
+                        } else {
+                            layer.msg(data.message);
+                        }
+                    },
+                    failed: function () {
+                        layer.msg("错误");
                     }
-                },
-                failed: function () {
-                    layer.msg("错误");
-                }
-            })
+                })
 
 
-            layer.close(index);
-        },
-        btn2: function (index, layero) {
-            layer.close(index);
-        },
-        cancel: function (index, layero) {
-            layer.close(index)
-        }
-    });
-}
+                layer.close(index);
+            },
+            btn2: function (index, layero) {
+                layer.close(index);
+            },
+            cancel: function (index, layero) {
+                layer.close(index)
+            }
+        });
+    })
+});

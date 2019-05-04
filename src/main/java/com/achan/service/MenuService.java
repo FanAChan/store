@@ -15,10 +15,12 @@ public interface MenuService {
 
     List<MenuVo> getAll();
 
+    List<MenuVo> getLimited();
+
     PageInfo getPage(MenuVo menuVo, int page, int num);
 
     MenuVo getById(String id);
 
-//    List<MenuVo> getByRoleIdList(List<String> roleIdList);
+    List<String> getByRole(String id);
 
 }

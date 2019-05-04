@@ -4,6 +4,7 @@ import com.achan.common.CommonResponse;
 import com.achan.entity.RoleVo;
 import com.achan.service.RoleService;
 import com.achan.util.UUIDUtil;
+import com.github.pagehelper.PageInfo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -23,7 +24,7 @@ public class RoleController {
     private RoleService roleService;
 
     @PostMapping("/add")
-    public CommonResponse add(RoleVo roleVo) {
+    public CommonResponse add(@RequestBody RoleVo roleVo) {
         roleVo.setId(UUIDUtil.randomID());
         int add = roleService.add(roleVo);
         if (add == 0) {
@@ -42,7 +43,7 @@ public class RoleController {
     }
 
     @PostMapping("/update")
-    public CommonResponse update(RoleVo roleVo) {
+    public CommonResponse update(@RequestBody RoleVo roleVo) {
         int update = roleService.update(roleVo);
         if (update == 0) {
             return CommonResponse.operationFailed();
@@ -52,7 +53,7 @@ public class RoleController {
 
     @GetMapping("/page")
     public CommonResponse page(@RequestParam(required = false) RoleVo roleVo, int pageNum, int pageSize) {
-        List<RoleVo> roleVoList = roleService.pageRole(roleVo, pageNum, pageSize);
+        PageInfo roleVoList = roleService.pageRole(roleVo, pageNum, pageSize);
         HashMap<String, Object> data = new HashMap<>();
         data.put("page", roleVoList);
         return CommonResponse.success(data);
@@ -74,5 +75,11 @@ public class RoleController {
         return CommonResponse.success(data);
     }
 
-
+    @GetMapping("/userRole")
+    public CommonResponse selectUserRole(String id) {
+        List<RoleVo> roleVoList = roleService.selectByUser(id);
+        HashMap<String, Object> data = new HashMap<>();
+        data.put("roleVoList", roleVoList);
+        return CommonResponse.success(data);
+    }
 }

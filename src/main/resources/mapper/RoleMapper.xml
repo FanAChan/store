@@ -3,7 +3,7 @@
 <mapper namespace="com.achan.dao.RoleDao">
 
     <select id="selectByRoleIds" resultType="com.achan.entity.RoleVo">
-        select id, name, description
+        select id, name
         from role
         where id in
             <foreach collection="ids" item="id" open="(" separator="," close=")">

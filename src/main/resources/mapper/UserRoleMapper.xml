@@ -5,7 +5,24 @@
     <select id="selectByUser" resultType="java.lang.String">
         select role_id
         from user_role
-        where user_id = #{userId}>
+        where user_id = #{user_id}
         and deleted = 0
     </select>
+
+    <update id="deleteUserRole">
+        update user_role
+        set deleted = 1
+        where user_id = #{user_id}
+    </update>
+
+    <insert id="batcnInsert" parameterType="com.achan.entity.base.UserRoleBase">
+        insert into user_role (id,user_id,role_id,deleted)
+        values
+        <foreach collection="list" item="item" index="index" separator=",">
+            (#{item.id},
+            #{item.userId},
+            #{item.roleId},
+            0)
+        </foreach>
+    </insert>
 </mapper>
