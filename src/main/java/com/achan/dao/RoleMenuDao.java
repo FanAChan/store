@@ -15,7 +15,7 @@ public interface RoleMenuDao extends RoleMenuBaseMapper {
 
     List<String> selectByRoleIdList(@Param("roleIdList") List<String> roleIdList);
 
-    int batchInset(@Param("list") List<RoleMenuBase> list);
+    int batchInsert(@Param("list") List<RoleMenuBase> list);
 
     int deleteByRoleId(@Param("roleId")String roleId);
 }

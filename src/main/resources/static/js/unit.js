@@ -101,7 +101,8 @@ layui.use(['element', 'table', 'jquery'], function () {
                     var body = layer.getChildFrame('body', index);
                     var new_name = body.find('#name').val();
                     var new_description = body.find('#description').val();
-                    if (new_name != data.name || new_description != data.description) {
+                    var change = new_name != data.name || new_description != data.description;
+                    if (change == true) {
                         $.ajax({
                             url: "/store/unit/update",
                             type: "post",
@@ -171,7 +172,7 @@ layui.use(['element', 'table', 'jquery'], function () {
 
     });
 
-    $(document).on('click', '#add',function () {
+    $(document).on('click', '#add', function () {
         layer.open({
             type: 2,
             title: "新增",

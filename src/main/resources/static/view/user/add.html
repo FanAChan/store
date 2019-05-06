@@ -6,7 +6,7 @@
     <link rel="stylesheet" href="../../layui/css/layui.css">
     <script src="../../layui/layui.all.js"></script>
     <script src="../../module/common.js"></script>
-    <link rel="stylesheet" href="../../module/formSelects/formSelects-v4.css" />
+    <link rel="stylesheet" href="../../module/formSelects/formSelects-v4.css"/>
 </head>
 <body>
 <div class="layui-fluid" style="padding: 10px">
@@ -45,13 +45,20 @@
                 <select name="city" xm-select="roleSelect"></select>
             </div>
         </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">授权仓库</label>
+            <input class="layui-hide" id="storehouse">
+            <div class="layui-input-block">
+                <select name="city" xm-select="storehouseSelect"></select>
+            </div>
+        </div>
         <hr/>
     </form>
 
 </div>
 </body>
 <script type="text/javascript">
-    layui.use(['form', 'jquery','formSelects'], function () {
+    layui.use(['form', 'jquery', 'formSelects'], function () {
         var form = layui.form;
         var $ = layui.jquery;
         var formSelects = layui.formSelects;
@@ -74,18 +81,42 @@
             }
         });
 
-        formSelects.on('roleSelect', function(id, vals, val, isAdd, isDisabled){
+        formSelects.data('storehouseSelect', 'server', {
+            url: '/store/storehouse/all',
+            beforeSuccess: function (id, url, searchVal, result) {
+                var data = new Array();
+                $.each(result.data.data, function (index, item) {
+                    var cur = {};
+                    cur.name = item.name;
+                    cur.value = item.id;
+                    data.push(cur);
+                });
+                return data;
+            },
+            success: function (id, url, searchVal, result) {
+                console.log(result);
+            }
+        });
+
+        formSelects.on('roleSelect', function (id, vals, val, isAdd, isDisabled) {
             //id:           点击select的id
             //vals:         当前select已选中的值
             //val:          当前select点击的值
             //isAdd:        当前操作选中or取消
             //isDisabled:   当前选项是否是disabled
-            var roles = formSelects.value(id,'val');
+            var roles = formSelects.value(id, 'val');
             $('#roles').val(roles);
-        },true);
-
-        formSelects.render('roleSelect');
-
+            console.log(roles);
+        }, true);
+        formSelects.on('storehouseSelect', function (id, vals, val, isAdd, isDisabled) {
+            //id:           点击select的id
+            //vals:         当前select已选中的值
+            //val:          当前select点击的值
+            //isAdd:        当前操作选中or取消
+            //isDisabled:   当前选项是否是disabled
+            var storehouse = formSelects.value(id, 'val');
+            $('#storehouse').val(storehouse);
+        }, true);
 
 
     });

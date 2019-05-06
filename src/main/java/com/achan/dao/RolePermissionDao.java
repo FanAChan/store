@@ -1,6 +1,8 @@
 package com.achan.dao;
 
+import com.achan.dao.base.RolePermissionBaseMapper;
 import com.achan.dao.base.UserRoleBaseMapper;
+import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 
@@ -10,7 +12,7 @@ import java.util.List;
  * @description: TODO
  * @date 2019/4/12
  */
-public interface RolePermissionDao extends UserRoleBaseMapper {
+public interface RolePermissionDao extends RolePermissionBaseMapper {
 
     /**
      * @Author AChan
@@ -19,5 +21,5 @@ public interface RolePermissionDao extends UserRoleBaseMapper {
      * @param userId
      * @return java.util.List<java.lang.String>
      **/
-    List<String> selectByRole(String userId);
+    List<String> selectByRoleIdList(@Param("list") List<String> roleIdList);
 }

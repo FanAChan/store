@@ -1,16 +1,10 @@
 package com.achan.service.impl;
 
-import com.achan.dao.RoleDao;
-import com.achan.dao.UserDao;
-import com.achan.dao.UserRoleDao;
-import com.achan.dao.base.RoleMenuBaseMapper;
-import com.achan.dao.base.RolePermissionBaseMapper;
-import com.achan.entity.RoleVo;
-import com.achan.entity.UserVo;
+import com.achan.dao.*;
+import com.achan.entity.*;
 import com.achan.entity.base.UserBase;
 import com.achan.entity.base.UserBaseExample;
 import com.achan.entity.base.UserRoleBase;
-import com.achan.entity.base.UserRoleBaseExample;
 import com.achan.service.UserService;
 import com.achan.util.Encryptor;
 import com.achan.util.EntityConverter;
@@ -24,6 +18,8 @@ import org.springframework.util.ObjectUtils;
 import org.springframework.util.StringUtils;
 
 import java.util.List;
+import java.util.Map;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 /**
@@ -44,10 +40,19 @@ public class UserServiceImpl implements UserService {
     private UserRoleDao userRoleDao;
 
     @Autowired
-    private RolePermissionBaseMapper rolePermissionBaseMapper;
+    private RolePermissionDao rolePermissionDao;
 
     @Autowired
-    private RoleMenuBaseMapper roleMenuBaseMapper;
+    private PermissionDao permissionDao;
+
+    @Autowired
+    private RoleMenuDao roleMenuDao;
+
+    @Autowired
+    private MenuDao menuDao;
+
+    @Autowired
+    private StorehousePermissionDao storehousePermissionDao;
 
     @Override
     public int add(UserVo userVo) {
@@ -61,7 +66,8 @@ public class UserServiceImpl implements UserService {
         List<RoleVo> roles = userVo.getRoles();
         if (insert > 0 && !CollectionUtils.isEmpty(roles)) {
             List<UserRoleBase> userRoleBaseList = buildUserRoleBase(roles, userVo.getId());
-            insert = userRoleDao.batcnInsert(userRoleBaseList);
+            insert = userRoleDao.batchInsert(userRoleBaseList);
+            storehousePermissionDao.batchInsert(this.buildStorehousePermission(userVo));
         }
         return insert;
     }
@@ -85,19 +91,50 @@ public class UserServiceImpl implements UserService {
         if (!checkUserBase(userVo) && checkPhoneExit(userVo)) {
             return 0;
         }
-        String credential = Encryptor.createCredential(userVo.getName(), userVo.getPassword());
-        userVo.setPassword(credential);
+//        String credential = Encryptor.createCredential(userVo.getPhone(), userVo.getPassword());
+//        userVo.setPassword(credential);
         userVo.setDeleted(false);
-        int update = userDao.updateByPrimaryKey(userVo);
+        int update = userDao.updateByPrimaryKeySelective(userVo);
         List<RoleVo> roles = userVo.getRoles();
-        if (update > 0 && !CollectionUtils.isEmpty(roles)) {
+        List<StorehouseVo> storehouseVos = userVo.getStorehouseVos();
+        if (update > 0) {
+            if (!CollectionUtils.isEmpty(roles)) {
+                userRoleDao.deleteUserRole(userVo.getId());
 
-            userRoleDao.deleteUserRole(userVo.getId());
+                List<UserRoleBase> userRoleBaseList = buildUserRoleBase(roles, userVo.getId());
 
-            List<UserRoleBase> userRoleBaseList = buildUserRoleBase(roles, userVo.getId());
-
-            update = userRoleDao.batcnInsert(userRoleBaseList);
+                update = userRoleDao.batchInsert(userRoleBaseList);
+            }
+            //修改用户授权仓库
+            if (!CollectionUtils.isEmpty(storehouseVos)) {
+                storehousePermissionDao.deleteByUserId(userVo.getId());
+                storehousePermissionDao.batchInsert(this.buildStorehousePermission(userVo));
+            }
         }
+        return update;
+    }
+
+    @Override
+    public int updatePassword(UserVo user, String newPassword) {
+        String newCredential = Encryptor.createCredential(user.getPhone(), newPassword);
+        int update = 0;
+        if (user.getPassword().equals(newCredential)) {
+            UserBase userBase = new UserBase();
+            userBase.setId(user.getId());
+            userBase.setPassword(newCredential);
+            update = userDao.updateByPrimaryKeySelective(userBase);
+        }
+        return update;
+    }
+
+    @Override
+    public int resetPassword(String id, String phone) {
+        int update = 0;
+        String newCredential = Encryptor.createCredential(phone, "123456");
+        UserBase userBase = new UserBase();
+        userBase.setId(id);
+        userBase.setPassword(newCredential);
+        update = userDao.updateByPrimaryKeySelective(userBase);
         return update;
     }
 
@@ -153,11 +190,21 @@ public class UserServiceImpl implements UserService {
         //2，获取菜单
         //3，获取具体权限
         List<String> roleIdList = userRoleDao.selectByUser(userVo.getId());
-
-
         List<RoleVo> roleVoList = roleDao.selectByRoleIds(roleIdList);
-
+        List<String> menuIdList = roleMenuDao.selectByRoleIdList(roleIdList);
+        List<MenuVo> menuVoList = menuDao.selectByIds(menuIdList);
+        List<String> permissionIdList = rolePermissionDao.selectByRoleIdList(roleIdList);
+        List<PermissionVo> permissionVos = permissionDao.selectByIds(permissionIdList);
+        Map<String, MenuVo> menuVoMap = menuVoList.stream().collect(Collectors.toMap(MenuVo::getId, Function.identity()));
+        permissionVos.stream()
+                .forEach(permissionVo -> {
+                    MenuVo menuVo = menuVoMap.get(permissionVo.getMenuId());
+                    if (menuVo != null) {
+                        menuVo.addPermissionVo(permissionVo);
+                    }
+                });
         userVo.setRoles(roleVoList);
+        userVo.setPermissionVos(permissionVos);
         return userVo;
     }
 
@@ -219,4 +266,20 @@ public class UserServiceImpl implements UserService {
         }).collect(Collectors.toList());
         return userRoleBaseList;
     }
+
+    private List<StorehousePermissionVo> buildStorehousePermission(UserVo userVo) {
+
+        List<StorehouseVo> storehouseVos = userVo.getStorehouseVos();
+        String id = userVo.getId();
+        List<StorehousePermissionVo> storehousePermissionVos = storehouseVos.stream()
+                .map(storeHouseVo -> {
+                    StorehousePermissionVo storehousePermissionVo = new StorehousePermissionVo();
+                    storehousePermissionVo.setId(UUIDUtil.randomID());
+                    storehousePermissionVo.setStorehouseId(storeHouseVo.getId());
+                    storehousePermissionVo.setUserId(id);
+                    return storehousePermissionVo;
+                }).collect(Collectors.toList());
+        return storehousePermissionVos;
+    }
+
 }

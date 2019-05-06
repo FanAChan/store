@@ -1,6 +1,7 @@
 package com.achan.service;
 
 import com.achan.entity.BillVo;
+import com.github.pagehelper.PageInfo;
 
 import java.util.List;
 
@@ -18,8 +19,9 @@ public interface BillService {
 
     int update(BillVo billVo);
 
-    List<BillVo> getBillVoPage(BillVo billVo, int page, int num);
+    PageInfo getBillVoPage(BillVo billVo, int page, int num);
 
     BillVo getBillVoDetail(String id);
 
+    int verify(String id,Byte state);
 }

@@ -103,8 +103,9 @@ layui.use(['element', 'table', 'jquery'], function () {
                     var new_name = body.find('#name').val();
                     var new_address = body.find('#address').val();
                     var new_description = body.find('#description').val();
-                    if (new_name != data.name || new_description != data.description
-                        || new_address != data.address) {
+                    var change = new_name != data.name || new_description != data.description
+                        || new_address != data.address;
+                    if (change == true) {
                         $.ajax({
                             url: "/store/storehouse/update",
                             type: "post",

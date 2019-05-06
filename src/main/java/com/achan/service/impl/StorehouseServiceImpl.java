@@ -1,7 +1,8 @@
 package com.achan.service.impl;
 
 import com.achan.dao.StorehouseDao;
-import com.achan.entity.StoreHouseVo;
+import com.achan.dao.StorehousePermissionDao;
+import com.achan.entity.StorehouseVo;
 import com.achan.entity.base.StorehouseBase;
 import com.achan.entity.base.StorehouseBaseExample;
 import com.achan.service.StorehouseService;
@@ -32,8 +33,11 @@ public class StorehouseServiceImpl implements StorehouseService {
     @Autowired
     private StorehouseDao storehouseDao;
 
+    @Autowired
+    private StorehousePermissionDao storehousePermissionDao;
+
     @Override
-    public int add(StoreHouseVo storeHouseVo) {
+    public int add(StorehouseVo storeHouseVo) {
         if (checkNameExit(storeHouseVo)) {
             return 0;
         }
@@ -42,7 +46,7 @@ public class StorehouseServiceImpl implements StorehouseService {
     }
 
     @Override
-    public int update(StoreHouseVo storeHouseVo) {
+    public int update(StorehouseVo storeHouseVo) {
         if (checkNameExit(storeHouseVo)) {
             return 0;
         }
@@ -60,7 +64,7 @@ public class StorehouseServiceImpl implements StorehouseService {
     }
 
     @Override
-    public PageInfo getStorehousePage(StoreHouseVo storeHouseVo, int page, int num) {
+    public PageInfo getStorehousePage(StorehouseVo storeHouseVo, int page, int num) {
         PageHelper.startPage(page, num);
         StorehouseBaseExample example = new StorehouseBaseExample();
         example.createCriteria()
@@ -70,15 +74,31 @@ public class StorehouseServiceImpl implements StorehouseService {
         }
         List<StorehouseBase> storehouseBaseList = storehouseDao.selectByExample(example);
         PageInfo pageInfo = new PageInfo<>(storehouseBaseList);
-        pageInfo.setList(EntityConverter.convert(storehouseBaseList,StoreHouseVo.class));
+        pageInfo.setList(EntityConverter.convert(storehouseBaseList, StorehouseVo.class));
         return pageInfo;
     }
 
     @Override
-    public StoreHouseVo getById(String id) {
+    public StorehouseVo getById(String id) {
         StorehouseBase storehouseBase = storehouseDao.selectByPrimaryKey(id);
-        StoreHouseVo storeHouseVo = EntityConverter.convert(storehouseBase, StoreHouseVo.class);
+        StorehouseVo storeHouseVo = EntityConverter.convert(storehouseBase, StorehouseVo.class);
         return storeHouseVo;
+    }
+
+    @Override
+    public List<StorehouseVo> getAll() {
+        StorehouseBaseExample example = new StorehouseBaseExample();
+        example.createCriteria()
+                .andDeletedEqualTo(false);
+        List<StorehouseBase> baseList = storehouseDao.selectByExample(example);
+        List<StorehouseVo> storehouseVoList = EntityConverter.convert(baseList, StorehouseVo.class);
+        return storehouseVoList;
+    }
+
+    @Override
+    public List<String> getByUserId(String id) {
+        List<String> storehouseIdList = storehousePermissionDao.selectByUserId(id);
+        return storehouseIdList;
     }
 
     /**
@@ -89,7 +109,7 @@ public class StorehouseServiceImpl implements StorehouseService {
      * @Author AChan
      * @Date 2019/4/17 22:58
      **/
-    private boolean validVo(StoreHouseVo storeHouseVo) {
+    private boolean validVo(StorehouseVo storeHouseVo) {
         if (ObjectUtils.isEmpty(storeHouseVo)) {
             return false;
         }
@@ -116,7 +136,7 @@ public class StorehouseServiceImpl implements StorehouseService {
      * @Author AChan
      * @Date 2019/4/17 23:05
      **/
-    private boolean checkNameExit(StoreHouseVo storeHouseVo) {
+    private boolean checkNameExit(StorehouseVo storeHouseVo) {
         StorehouseBaseExample storehouseBaseExample = new StorehouseBaseExample();
         storehouseBaseExample.createCriteria()
                 .andIdNotEqualTo(storeHouseVo.getId())

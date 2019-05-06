@@ -15,7 +15,7 @@
         where user_id = #{user_id}
     </update>
 
-    <insert id="batcnInsert" parameterType="com.achan.entity.base.UserRoleBase">
+    <insert id="batchInsert" parameterType="com.achan.entity.base.UserRoleBase">
         insert into user_role (id,user_id,role_id,deleted)
         values
         <foreach collection="list" item="item" index="index" separator=",">

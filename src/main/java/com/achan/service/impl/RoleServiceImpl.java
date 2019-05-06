@@ -78,7 +78,7 @@ public class RoleServiceImpl implements RoleService {
         role.setDeleted(false);
         int insert = roleDao.insert(role);
         if (insert > 0) {
-            insert = roleMenuDao.batchInset(roleMenuBases);
+            insert = roleMenuDao.batchInsert(roleMenuBases);
         }
         return insert;
     }
@@ -94,7 +94,7 @@ public class RoleServiceImpl implements RoleService {
         if (insert > 0 && !CollectionUtils.isEmpty(role.getMenus())) {
             List<RoleMenuBase> roleMenuBases = this.buildRoleMenuBase(role);
             roleMenuDao.deleteByRoleId(role.getId());
-            insert = roleMenuDao.batchInset(roleMenuBases);
+            insert = roleMenuDao.batchInsert(roleMenuBases);
         }
         return insert;
     }

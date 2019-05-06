@@ -1,4 +1,4 @@
-package com.achan.config;
+package com.achan.common;
 
 
 import com.achan.common.CommonResponse;

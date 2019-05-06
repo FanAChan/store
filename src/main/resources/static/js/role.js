@@ -98,7 +98,8 @@ layui.use(['element', 'table', 'jquery', 'tree', 'form'], function () {
                     var new_description = body.find('#description').val();
                     var menuChange = body.find('#menuChange').val();
                     var menuId = body.find('#menus').val();
-                    if (new_name != local_data.name || new_description != local_data.description || menuChange) {
+                    var change = new_name != local_data.name || new_description != local_data.description || menuChange;
+                    if (change == true) {
                         var result = {
                             id: data.id,
                             name: new_name,

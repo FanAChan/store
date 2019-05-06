@@ -11,7 +11,7 @@
         </foreach>
         and deleted = 0
     </select>
-    <insert id="batchInset" parameterType="com.achan.entity.base.RoleMenuBase">
+    <insert id="batchInsert" parameterType="com.achan.entity.base.RoleMenuBase">
         insert into role_menu (id,role_id,menu_id,deleted)
         values
         <foreach collection="list" item="item" index="index" separator=",">

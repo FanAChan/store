@@ -93,4 +93,27 @@ public interface UserService {
      **/
     UserVo getByPhone(String phone);
 
+    /**
+     * 用户修改密码
+     *
+     * @param userVo
+     * @param newPassword
+     * @return int
+     * @Author AChan
+     * @Date 2019/5/6 11:49
+     **/
+    int updatePassword(UserVo userVo, String newPassword);
+
+    /**
+     * 重置密码
+     *
+     * @param id
+     * @param phone
+     * @return int
+     * @Author AChan
+     * @Date 2019/5/6 11:53
+     **/
+    int resetPassword(String id, String phone);
+
+
 }

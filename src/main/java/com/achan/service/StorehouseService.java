@@ -1,7 +1,9 @@
 package com.achan.service;
 
-import com.achan.entity.StoreHouseVo;
+import com.achan.entity.StorehouseVo;
 import com.github.pagehelper.PageInfo;
+
+import java.util.List;
 
 /**
  * @author AChan
@@ -11,13 +13,17 @@ import com.github.pagehelper.PageInfo;
  */
 public interface StorehouseService {
 
-    int add(StoreHouseVo storeHouseVo);
+    int add(StorehouseVo storeHouseVo);
 
-    int update(StoreHouseVo storeHouseVo);
+    int update(StorehouseVo storeHouseVo);
 
     int delete(String id);
 
-    PageInfo getStorehousePage(StoreHouseVo storeHouseVo, int page, int num);
+    PageInfo getStorehousePage(StorehouseVo storeHouseVo, int page, int num);
 
-    StoreHouseVo getById(String id);
+    StorehouseVo getById(String id);
+
+    List<StorehouseVo> getAll();
+
+    List<String> getByUserId(String id);
 }

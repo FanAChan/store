@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8"/>
+    <title>企业进销存系统</title>
+    <link rel="stylesheet" href="../../layui/css/layui.css">
+    <script src="../../layui/layui.all.js"></script>
+</head>
+<body>
+<div class="layui-fluid" style="padding: 10px">
+
+    <form class="layui-form" id="edit_unit">
+        <div class="layui-form-item">
+            <label class="layui-form-label">ID</label>
+            <div class="layui-input-block">
+                <input id="id" type="text" name="id" required=""  lay-verify="required" autocomplete="off" class="layui-input layui-disabled" disabled="disabled"/>
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">名称</label>
+            <div class="layui-input-block">
+                <input id="name" type="text" name="name" required=""  lay-verify="required" placeholder="请输入菜单名称" autocomplete="off" class="layui-input"/>
+            </div>
+        </div>
+        <div class="layui-form-item layui-form-text">
+            <label class="layui-form-label">描述</label>
+            <div class="layui-input-block">
+                <textarea id="description" name="description" placeholder="请输入菜单描述" class="layui-textarea"></textarea>
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">路径</label>
+            <div class="layui-input-block">
+                <input id="url" type="text" name="name" required=""  lay-verify="required" placeholder="请输入菜单路径" autocomplete="off" class="layui-input"/>
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">排序</label>
+            <div class="layui-input-block">
+                <input id="seq" type="text" name="name" required=""  lay-verify="required" placeholder="请输入菜单排序" autocomplete="off" class="layui-input"/>
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">受限</label>
+            <div class="layui-input-block">
+                <input id="limited" type="checkbox" name="leaf" lay-skin="switch" lay-text="是|否" value="false"
+                       lay-filter="leaf">
+            </div>
+            <div class="layui-form-mid layui-word-aux">不受限菜单不需要授权</div>
+        </div>
+        <hr/>
+    </form>
+
+</div>
+</body>
+    <script type="text/javascript">
+        layui.use(['form', 'jquery'], function () {
+            var form = layui.form;
+            var $ = layui.jquery;
+            var local_data = parent.data;
+            var limited = local_data.limited;
+            $('#id').val(local_data.id);
+            $('#name').val(local_data.name);
+            $('#description').val(local_data.description);
+            $('#seq').val(local_data.seq);
+            $('#url').val(local_data.url);
+            if (limited) {
+                $('#limited').val(limited);
+                $("#limited").attr('checked','checked');
+            }
+            form.render();
+            //监听指定开关
+            form.on('switch(leaf)', function (data) {
+                $('#leaf').val((this.checked ? 'true' : 'false'))
+            });
+        });
+
+    </script>
+</html>

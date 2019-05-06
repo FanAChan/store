@@ -97,9 +97,10 @@ layui.use(['element', 'table', 'jquery', 'tree', 'form', 'formSelects'], functio
                     var new_typeId = body.find('#typeId').val();
                     var new_majorUnitId = body.find('#majorUnitId').val();
                     var new_manufacturer = body.find('#manufacturer').val();
-                    if (new_name != local_data.name || new_number != local_data.number
+                    var change = new_name != local_data.name || new_number != local_data.number
                         || new_typeId != local_data.typeId || new_majorUnitId != local_data.majorUnitId
-                        || new_manufacturer != local_data.manufacturer) {
+                        || new_manufacturer != local_data.manufacturer;
+                    if (change == true) {
                         $.ajax({
                             url: "/store/goods/update",
                             type: "post",

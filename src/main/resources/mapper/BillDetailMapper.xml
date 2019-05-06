@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.achan.dao.BillDetailDao">
+
+
+    <insert id="batchInsert" parameterType="com.achan.entity.BillDetailVo">
+        insert into bill_detail (id,bill_id,goods_id,goods_name,num,deleted)
+        values
+        <foreach collection="list" item="item" index="index" separator=",">
+            (#{item.id},
+            #{item.billId},
+            #{item.goodsId},
+            #{item.goodsName},
+            #{item.num},
+            0)
+        </foreach>
+    </insert>
+
+    <update id="deleteByBillId" parameterType="java.lang.String">
+        update bill_detail
+        set deleted = 1
+        where bill_id = #{bill_id}
+    </update>
+
+
+</mapper>

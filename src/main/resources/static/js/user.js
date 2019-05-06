@@ -1,9 +1,8 @@
-layui.use(['element', 'table', 'jquery', 'tree', 'form', 'treeSelect', 'formSelects'], function () {
+layui.use(['element', 'table', 'jquery', 'tree', 'form', 'formSelects'], function () {
     var element = layui.element;
     var table = layui.table;
     var $ = layui.jquery;
     var form = layui.form;
-    var treeSelect = layui.treeSelect;
     var formSelects = layui.formSelects;
 
     //监听工具条
@@ -86,19 +85,19 @@ layui.use(['element', 'table', 'jquery', 'tree', 'form', 'treeSelect', 'formSele
                 yes: function (index, layero) {
                     var body = layer.getChildFrame('body', index);
                     var new_name = body.find('#name').val();
-                    var new_password = body.find('#password').val();
                     var new_phone = body.find('#phone').val();
                     var new_mail = body.find('#mail').val();
-                    var user_roles = new Array();
                     var roleChange = body.find('#roleChange').val();
+                    var storehouseChange = body.find('#storehouseChange').val();
                     var roles = body.find('#roles').val();
-                    if (new_name != local_data.name
+                    var storehouseIds = body.find('#storehouse').val();
+                    var change = new_name != local_data.name
                         || new_phone != local_data.phone || new_mail != local_data.mail
-                         || roleChange) {
+                        || roleChange || storehouseChange;
+                    if (change == true) {
                         var dto = {
                             id: local_data.id,
                             name: new_name,
-                            password: new_password,
                             phone: new_phone,
                             mail: new_mail
                         };
@@ -110,6 +109,15 @@ layui.use(['element', 'table', 'jquery', 'tree', 'form', 'treeSelect', 'formSele
                                 user_roles.push(role);
                             })
                             dto.roles = user_roles;
+                        }
+                        if (storehouseChange) {
+                            var storehouse = new Array();
+                            $.each(storehouseIds.split(","), function (index, item) {
+                                var sh = {};
+                                sh.id = item;
+                                storehouse.push(role);
+                            })
+                            dto.storeHouseVos = storehouse;
                         }
                         $.ajax({
                             url: "/store/user/update",
@@ -208,12 +216,21 @@ layui.use(['element', 'table', 'jquery', 'tree', 'form', 'treeSelect', 'formSele
                     role.id = item;
                     roles.push(role);
                 })
+                var storehousesString = body.find('#storehouse').val();
+                var storehouse = storehousesString.split(",");
+                var storehouses = new Array();
+                $.each(storehouse, function (index, item) {
+                    var sh = {};
+                    sh.id = item;
+                    storehouses.push(sh);
+                })
                 var result = {
                     name: name,
                     mail: mail,
                     phone: phone,
                     password: password,
-                    roles: roles
+                    roles: roles,
+                    storehouseVos: storehouses
                 }
                 $.ajax({
                     url: "/store/user/add",

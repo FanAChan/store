@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8"/>
+    <title>企业进销存系统</title>
+    <link rel="stylesheet" href="../../layui/css/layui.css">
+    <script src="../../layui/layui.all.js"></script>
+    <script src="../../module/common.js"></script>
+    <link rel="stylesheet" href="../../module/formSelects/formSelects-v4.css"/>
+</head>
+<body>
+<div class="layui-fluid" style="padding: 10px">
+
+    <form class="layui-form" id="add_unit">
+        <div class="layui-form-item">
+            <label class="layui-form-label">ID</label>
+            <div class="layui-input-block">
+                <input id="id" type="text" name="name" required="" lay-verify="required" placeholder="请输入用户名称"
+                       autocomplete="off" class="layui-input"/>
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">名称</label>
+            <div class="layui-input-block">
+                <input id="name" type="text" name="name" required="" lay-verify="required" placeholder="请输入用户名称"
+                       autocomplete="off" class="layui-input"/>
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label for="" class="layui-form-label">联系方式</label>
+            <div class="layui-input-block">
+                <input type="text" id="phone" lay-filter="phone" class="layui-input" placeholder="请输入用户联系方式">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label for="" class="layui-form-label">邮箱</label>
+            <div class="layui-input-block">
+                <input type="text" id="mail" lay-filter="phone" class="layui-input" placeholder="请输入用户邮箱">
+            </div>
+        </div>
+<!--        <div class="layui-form-item">-->
+<!--            <label class="layui-form-label">角色</label>-->
+<!--            <div class="layui-input-block">-->
+<!--                <select name="city" xm-select="roleSelect" disabled="disabled"></select>-->
+<!--            </div>-->
+<!--        </div>-->
+<!--        <div class="layui-form-item">-->
+<!--            <label class="layui-form-label">授权仓库</label>-->
+<!--            <div class="layui-input-block">-->
+<!--                <select name="city" xm-select="storehouseSelect" disabled="disabled"></select>-->
+<!--            </div>-->
+<!--        </div>-->
+        <hr/>
+        <div class="layui-form-item">
+            <div class="layui-input-inline">
+                <button id="update" class="layui-btn">
+                    <i class="layui-icon">&#xe608;</i> 修改
+                </button>
+            </div>
+            <div class="layui-input-inline">
+                <button id="updatePassword" class="layui-btn">
+                    <i class="layui-icon">&#xe608;</i> 修改密码
+                </button>
+            </div>
+        </div>
+    </form>
+
+</div>
+</body>
+<script type="text/javascript">
+    layui.use(['form', 'jquery', 'formSelects'], function () {
+        var form = layui.form;
+        var $ = layui.jquery;
+        var formSelects = layui.formSelects;
+        var userRole = new Array();
+        var storehouse = new Array();
+
+        $.ajax({
+            url:"/store/user/message",
+            type:"get",
+            success: function (data) {
+                var user = data.data.user;
+                $('#id').val(user.id);
+                $('#name').val(user.name);
+                $('#phone').val(user.phone);
+                $('#mail').val(user.mail);
+            }
+        })
+
+        $(document).on('click', '#update', function (){
+
+        })
+
+        $(document).on('click', '#updatePassword', function (){
+            layer.open({
+                type: 2,
+                title: "修改密码",
+                closeBtn: 1,
+                area: ['650px', '400px'],
+                shadeClose: true,
+                skin: "layui-layer-molv",
+                content: "../user/update_password.html",
+                btn: ["确定", "取消"],
+                btnAlign: "c",
+                yes: function (index, layero) {
+
+                    var oldPassword = $('#oldPassword').val();
+                    var newPassword = $('#newPassword').val();
+                    var confirmPassword = $('#confirmPassword').val();
+                    if(newPassword == confirmPassword){
+                        $.ajax({
+                            url:"/store/user/updatePassword",
+                            type:"post",
+                            data:{
+                                "newPassword":newPassword,
+                                "oldPassword":oldPassword
+                            },
+                            success:function (data) {
+                                if (data.success) {
+                                    layer.msg(data.message);
+                                    //刷新
+                                    $(".layui-laypage-btn")[0].click()
+                                } else {
+                                    layer.msg(data.message);
+                                }
+                            }
+                        })
+                    }
+                    layer.close(index); //如果设定了yes回调，需进行手工关闭
+                },
+                success: function (layero, index) {
+                },
+                cancel: function (index, layero) {
+                    layer.close(index)
+                }
+            });
+        })
+
+
+    });
+</script>
+
+
+</html>

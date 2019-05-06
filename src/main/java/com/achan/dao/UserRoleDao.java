@@ -25,5 +25,5 @@ public interface UserRoleDao extends UserRoleBaseMapper {
 
     int deleteUserRole(@Param("user_id") String id);
 
-    int batcnInsert(@Param("list") List<UserRoleBase> userRoleBaseList);
+    int batchInsert(@Param("list") List<UserRoleBase> userRoleBaseList);
 }

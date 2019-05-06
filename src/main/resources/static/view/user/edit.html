@@ -27,13 +27,6 @@
             </div>
         </div>
         <div class="layui-form-item">
-            <label class="layui-form-label">密码</label>
-            <div class="layui-input-block">
-                <input id="password" type="text" name="name" required="" lay-verify="required" placeholder="请输入用户名称"
-                       autocomplete="off" class="layui-input"/>
-            </div>
-        </div>
-        <div class="layui-form-item">
             <label for="" class="layui-form-label">联系方式</label>
             <div class="layui-input-block">
                 <input type="text" id="phone" lay-filter="phone" class="layui-input" placeholder="请输入用户联系方式">
@@ -48,9 +41,17 @@
         <div class="layui-form-item">
             <label class="layui-form-label">角色</label>
             <input class="layui-hide" id="roles">
-            <input class="layui-hide" id="roleChange">
+            <input class="layui-hide" id="roleChange" value="false">
             <div class="layui-input-block">
                 <select name="city" xm-select="roleSelect"></select>
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">授权仓库</label>
+            <input class="layui-hide" id="storehouse">
+            <input class="layui-hide" id="storehouseChange" value="false">
+            <div class="layui-input-block">
+                <select name="city" xm-select="storehouseSelect"></select>
             </div>
         </div>
         <hr/>
@@ -64,9 +65,9 @@
         var $ = layui.jquery;
         var formSelects = layui.formSelects;
         var userRole = new Array();
+        var storehouse = new Array();
         $('#id').val(parent.data.id);
         $('#name').val(parent.data.name);
-        $('#password').val(parent.data.password);
         $('#phone').val(parent.data.phone);
         $('#mail').val(parent.data.mail);
         $('#description').val(parent.data.description);
@@ -83,6 +84,21 @@
                     userRole.push(item.id);
                 })
                 $('#roles').val(userRole);
+            }
+        })
+
+        $.ajax({
+            url: "/store/storehouse/userStorehouse",
+            type: "get",
+            data: {
+                id: parent.data.id
+            },
+            success: function (data) {
+                var list = data.data.data;
+                $.each(list, function (index, item) {
+                    storehouse.push(item);
+                })
+                $('#storehouse').val(storehouse);
             }
         })
 
@@ -104,6 +120,23 @@
             }
         });
 
+        formSelects.data('storehouseSelect', 'server', {
+            url: '/store/storehouse/all',
+            beforeSuccess: function (id, url, searchVal, result) {
+                var data = new Array();
+                $.each(result.data.data, function (index, item) {
+                    var cur = {};
+                    cur.name = item.name;
+                    cur.value = item.id;
+                    data.push(cur);
+                });
+                return data;
+            },
+            success: function (id, url, searchVal, result) {
+                formSelects.value('storehouseSelect', storehouse);
+            }
+        });
+
         formSelects.on('roleSelect', function (id, vals, val, isAdd, isDisabled) {
             //id:           点击select的id
             //vals:         当前select已选中的值
@@ -111,7 +144,10 @@
             //isAdd:        当前操作选中or取消
             //isDisabled:   当前选项是否是disabled
             var roles = formSelects.value(id, 'val');
-            if (roles != userRole) {
+            console.log(roles.toString() != userRole.toString())
+            console.log(roles);
+            console.log(userRole);
+            if (roles.toString() != userRole.toString()) {
                 $('#roleChange').val(true);
             } else {
                 $('#roleChange').val(false);
@@ -119,7 +155,23 @@
             $('#roles').val(roles);
         }, true);
 
+        formSelects.on('storehouseSelect', function (id, vals, val, isAdd, isDisabled) {
+            //id:           点击select的id
+            //vals:         当前select已选中的值
+            //val:          当前select点击的值
+            //isAdd:        当前操作选中or取消
+            //isDisabled:   当前选项是否是disabled
+            var roles = formSelects.value(id, 'val');
+            if (roles.toString() != storehouse.toString()) {
+                $('#storehouseChange').val(true);
+            } else {
+                $('#storehouseChange').val(false);
+            }
+            $('#storehouse').val(roles);
+        }, true);
+
         formSelects.render('roleSelect');
+        formSelects.render('storehouseSelect');
 
 
     });

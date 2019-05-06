@@ -83,8 +83,6 @@
                 return data;
             },
             success: function (id, url, searchVal, result) {
-                console.log("角色菜单")
-                console.log(roleMenu);
                 formSelects.value('menuSelect', roleMenu);
             }
         });
@@ -96,7 +94,7 @@
             //isAdd:        当前操作选中or取消
             //isDisabled:   当前选项是否是disabled
             var menus = formSelects.value(id, 'val');
-            if (menus != roleMenu) {
+            if (menus.toString() != roleMenu.toString()) {
                 $('#menuChange').val(true);
             } else {
                 $('#menuChange').val(false);
